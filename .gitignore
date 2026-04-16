@@ -1,0 +1,6 @@
+.gitnexus
+
+# Claude Code context files (local tooling, not project content)
+.claude/
+AGENTS.md
+CLAUDE.md
