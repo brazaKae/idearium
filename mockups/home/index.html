@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Idearium — Átrio (Laboratório v2)</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        bg:     '#FAFAF7',
+        card:   '#FFFFFF',
+        panel:  '#F5F2EB',
+        ink:    '#1C1C1B',
+        muted:  '#6B6560',
+        accent: '#1E3A5F',
+        gold:   '#C8A04A',
+        rule:   '#E5E2DB',
+      },
+      fontFamily: {
+        serif: ['Lora', 'Source Serif 4', 'Georgia', 'serif'],
+        sans:  ['Inter', 'system-ui', 'sans-serif'],
+        mono:  ['IBM Plex Mono', 'ui-monospace', 'monospace'],
+      },
+      maxWidth: {
+        'salon': '1440px',
+      },
+    },
+  },
+};
+</script>
+<style>
+  html { scroll-behavior: smooth; }
+  body {
+    background-color: #FAFAF7;
+    color: #1C1C1B;
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  .serif { font-family: 'Lora', 'Source Serif 4', Georgia, serif; }
+  .mono  { font-family: 'IBM Plex Mono', ui-monospace, monospace; }
+
+  /* nav underline */
+  .nav-link { position: relative; }
+  .nav-link::after {
+    content: ""; position: absolute;
+    left: 0; right: 0; bottom: -6px;
+    height: 1px; background: #1E3A5F;
+    transform: scaleX(0); transform-origin: left;
+    transition: transform .15s ease;
+  }
+  .nav-link:hover::after { transform: scaleX(1); }
+
+  /* dot separator for mono meta lines */
+  .dot-sep::before {
+    content: "·"; margin: 0 .5rem; color: #6B6560;
+  }
+
+  /* sidebar lab list — hover w/ left accent rule */
+  .lab-item {
+    position: relative;
+    transition: background-color .15s ease;
+    border-left: 2px solid transparent;
+  }
+  .lab-item:hover {
+    background-color: #F5F2EB;
+    border-left-color: #1E3A5F;
+  }
+  .lab-item:hover .lab-name { color: #1E3A5F; }
+
+  /* RFC row hover (denser than v1) */
+  .rfc-row { transition: background-color .15s ease; }
+  .rfc-row:hover { background-color: #F4F2EC; }
+  .rfc-row:hover .rfc-title { color: #1E3A5F; }
+
+  /* Status chip (reused from v1) */
+  .status-chip {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 11px; letter-spacing: .02em;
+    color: #6B6560;
+    background: transparent;
+    border: 1px solid #E5E2DB;
+    border-radius: 2px;
+    padding: 2px 8px;
+    white-space: nowrap;
+  }
+  .status-chip.active  { color: #1E3A5F; border-color: #C4CFDA; }
+  .status-chip.draft   { color: #6B6560; }
+  .status-chip.review  { color: #8A6E22; border-color: #E8D9AF; }
+
+  /* ============ CTA box ============ */
+  .cta-box {
+    position: relative;
+    background: #FFFFFF;
+    border: 1px solid #E5E2DB;
+    border-radius: 4px;
+  }
+  .cta-box::before {
+    content: "";
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 2px;
+    background: #C8A04A;
+  }
+
+  /* pseudo-input caret blink */
+  .pseudo-input {
+    background: #FAFAF7;
+    border: 1px dashed #C7C2BA;
+    border-radius: 3px;
+  }
+  .caret {
+    display: inline-block;
+    width: 1px; height: 1.05em;
+    background: #1E3A5F;
+    margin-left: 2px;
+    transform: translateY(3px);
+    animation: blink 1.05s steps(1) infinite;
+  }
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+
+  /* CTA button */
+  .cta-btn {
+    display: inline-block;
+    border: 1px solid #1E3A5F;
+    color: #1E3A5F;
+    background: transparent;
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 12px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    padding: 10px 20px;
+    border-radius: 2px;
+    transition: background-color .15s ease, color .15s ease;
+    cursor: pointer;
+  }
+  .cta-btn:hover {
+    background: #1E3A5F;
+    color: #FFFFFF;
+  }
+
+  /* step row */
+  .step-row { border-bottom: 1px solid #E5E2DB; }
+  .step-row:last-child { border-bottom: 0; }
+
+  /* Ornament */
+  .ornament {
+    display: inline-block;
+    color: #C8A04A;
+    font-size: 16px;
+    line-height: 1;
+  }
+
+  /* sticky sidebars — only on lg+ */
+  @media (min-width: 1024px) {
+    .col-sticky {
+      position: sticky;
+      top: 88px; /* below header */
+      max-height: calc(100vh - 104px);
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: #E5E2DB transparent;
+    }
+    .col-sticky::-webkit-scrollbar { width: 6px; }
+    .col-sticky::-webkit-scrollbar-thumb { background: #E5E2DB; border-radius: 3px; }
+  }
+
+  /* subtle focus ring consistent w/ brand */
+  a:focus-visible, button:focus-visible {
+    outline: 1px solid #1E3A5F;
+    outline-offset: 2px;
+  }
+</style>
+</head>
+<body class="min-h-screen">
+
+<!-- ============== HEADER (identical to v1) ============== -->
+<header class="border-b border-rule bg-bg/90 backdrop-blur-sm sticky top-0 z-40">
+  <div class="max-w-salon mx-auto px-5 sm:px-8 py-5 flex items-center gap-8">
+    <a href="#" class="flex items-baseline gap-3">
+      <span class="font-sans font-bold tracking-wider text-ink text-[17px] sm:text-[18px]">IDEARIUM</span>
+      <span class="hidden sm:inline mono text-[11px] uppercase tracking-widest text-muted">community labs</span>
+    </a>
+
+    <nav class="hidden md:flex items-center gap-8 ml-6 text-[14px] font-medium text-ink">
+      <a class="nav-link" href="#laboratorios">Laboratórios</a>
+      <a class="nav-link" href="#ideias">Ideias</a>
+      <a class="nav-link" href="#">Builders</a>
+      <a class="nav-link" href="#">Sobre</a>
+    </nav>
+
+    <div class="ml-auto flex items-center gap-3">
+      <a href="#" class="hidden sm:inline-block text-[13px] mono text-muted hover:text-accent">pt · en</a>
+      <a href="#"
+         class="text-[13px] font-medium text-ink border border-ink/70 hover:border-accent hover:text-accent px-4 py-2 rounded-sm transition-colors">
+        Entrar
+      </a>
+    </div>
+  </div>
+</header>
+
+<!-- ============== SALÃO (3 columns on desktop) ============== -->
+<main class="max-w-salon mx-auto px-5 sm:px-8 pt-8 lg:pt-14 pb-14">
+
+  <!-- ============== MOBILE: CTA PROMOTED TO TOP ============== -->
+  <section class="lg:hidden mb-10" aria-label="Escreva uma ideia (mobile)">
+    <!-- reuse CTA (mobile copy — identical content) -->
+    <div class="cta-box p-6">
+      <p class="mono text-[11px] uppercase tracking-widest text-accent">// ESCREVA UMA IDEIA</p>
+      <p class="font-sans font-semibold text-ink text-[18px] mt-5 leading-snug" style="letter-spacing: -0.01em;">não precisa saber fazer.</p>
+      <p class="font-sans font-semibold text-ink text-[18px] leading-snug" style="letter-spacing: -0.01em;">precisa só querer que aconteça.</p>
+      <div class="text-center my-7"><span class="ornament text-[20px]">✺</span></div>
+
+      <p class="mono text-[11px] text-muted">rascunho · só você vê</p>
+
+      <div class="pseudo-input mt-3 p-4">
+        <span class="font-sans text-[16px] text-muted">e se a gente<span class="caret"></span></span>
+      </div>
+
+      <button class="cta-btn mt-6" type="button">[ começar a escrever ]</button>
+
+      <p class="mono text-[11px] text-muted mt-5 leading-relaxed">
+        leva uns 3 minutos. ninguém lê até você publicar.
+      </p>
+
+      <div class="border-t border-rule my-5"></div>
+
+      <p class="serif text-[13px] text-muted leading-relaxed">
+        — prometemos não mandar email chato. só quando alguém levantar a mão pra construir.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============== 3-COLUMN GRID (desktop) ============== -->
+  <div class="lg:grid lg:grid-cols-[260px_minmax(0,1fr)_340px] lg:gap-12">
+
+    <!-- ============== LEFT SIDEBAR ============== -->
+    <aside class="hidden lg:block col-sticky" id="laboratorios">
+
+      <!-- LAB LIST -->
+      <div>
+        <p class="mono text-[11px] uppercase tracking-widest text-muted mb-4">// LABORATÓRIOS</p>
+
+        <ul class="divide-y divide-rule border-y border-rule">
+
+          <li>
+            <a href="#" class="lab-item block px-3 py-3 pl-4">
+              <div class="flex items-center gap-3">
+                <span class="text-muted text-[15px]" aria-hidden="true">◈</span>
+                <span class="lab-name font-sans font-semibold text-ink text-[15px] leading-tight">Lab. Educação</span>
+              </div>
+              <p class="mono text-[11px] text-muted mt-1 pl-6">12 ideias · 34 builders</p>
+            </a>
+          </li>
+
+          <li>
+            <a href="#" class="lab-item block px-3 py-3 pl-4">
+              <div class="flex items-center gap-3">
+                <span class="text-muted text-[15px]" aria-hidden="true">◇</span>
+                <span class="lab-name font-sans font-semibold text-ink text-[15px] leading-tight">Lab. Cidades</span>
+              </div>
+              <p class="mono text-[11px] text-muted mt-1 pl-6">9 ideias · 22 builders</p>
+            </a>
+          </li>
+
+          <li>
+            <a href="#" class="lab-item block px-3 py-3 pl-4">
+              <div class="flex items-center gap-3">
+                <span class="text-muted text-[15px]" aria-hidden="true">✚</span>
+                <span class="lab-name font-sans font-semibold text-ink text-[15px] leading-tight">Lab. Saúde</span>
+              </div>
+              <p class="mono text-[11px] text-muted mt-1 pl-6">7 ideias · 18 builders</p>
+            </a>
+          </li>
+
+          <li>
+            <a href="#" class="lab-item block px-3 py-3 pl-4">
+              <div class="flex items-center gap-3">
+                <span class="text-muted text-[15px]" aria-hidden="true">♪</span>
+                <span class="lab-name font-sans font-semibold text-ink text-[15px] leading-tight">Lab. Cultura</span>
+              </div>
+              <p class="mono text-[11px] text-muted mt-1 pl-6">6 ideias · 14 builders</p>
+            </a>
+          </li>
+
+          <li>
+            <a href="#" class="lab-item block px-3 py-3 pl-4">
+              <div class="flex items-center gap-3">
+                <span class="text-muted text-[15px]" aria-hidden="true">⌘</span>
+                <span class="lab-name font-sans font-semibold text-ink text-[15px] leading-tight">Lab. Tec. Cívica</span>
+              </div>
+              <p class="mono text-[11px] text-muted mt-1 pl-6">8 ideias · 26 builders</p>
+            </a>
+          </li>
+
+          <li>
+            <a href="#" class="lab-item block px-3 py-3 pl-4">
+              <div class="flex items-center gap-3">
+                <span class="text-muted text-[15px]" aria-hidden="true">◆</span>
+                <span class="lab-name font-sans font-semibold text-ink text-[15px] leading-tight">Lab. Econ. Solidária</span>
+              </div>
+              <p class="mono text-[11px] text-muted mt-1 pl-6">5 ideias · 14 builders</p>
+            </a>
+          </li>
+
+        </ul>
+      </div>
+
+      <!-- STATS GERAIS -->
+      <div class="mt-8 border border-rule bg-panel/50 p-5 rounded-sm">
+        <p class="mono text-[11px] uppercase tracking-widest text-muted mb-4">// panorama</p>
+
+        <div class="flex items-baseline gap-3">
+          <span class="mono text-[26px] text-ink leading-none">47</span>
+          <span class="serif text-[13px] text-muted">ideias ativas</span>
+        </div>
+        <div class="flex items-baseline gap-3 mt-3">
+          <span class="mono text-[26px] text-ink leading-none">128</span>
+          <span class="serif text-[13px] text-muted">builders registrados</span>
+        </div>
+        <div class="flex items-baseline gap-3 mt-3">
+          <span class="mono text-[26px] text-ink leading-none">6</span>
+          <span class="serif text-[13px] text-muted">laboratórios</span>
+        </div>
+      </div>
+
+      <!-- BUILDERS EM BUSCA -->
+      <div class="mt-8">
+        <p class="mono text-[11px] uppercase tracking-widest text-muted mb-4">// BUILDERS EM BUSCA</p>
+
+        <ul class="divide-y divide-rule border-y border-rule">
+
+          <li>
+            <a href="#" class="lab-item block px-3 py-3 pl-4">
+              <p class="mono font-medium text-ink text-[13px] leading-tight lab-name">@mari.fe</p>
+              <p class="serif text-[12px] text-muted mt-1 leading-snug">front + ilustração · procura cultura</p>
+            </a>
+          </li>
+
+          <li>
+            <a href="#" class="lab-item block px-3 py-3 pl-4">
+              <p class="mono font-medium text-ink text-[13px] leading-tight lab-name">@jhonatan</p>
+              <p class="serif text-[12px] text-muted mt-1 leading-snug">data + infra · cidades e saúde</p>
+            </a>
+          </li>
+
+          <li>
+            <a href="#" class="lab-item block px-3 py-3 pl-4">
+              <p class="mono font-medium text-ink text-[13px] leading-tight lab-name">@lu.design</p>
+              <p class="serif text-[12px] text-muted mt-1 leading-snug">produto + UX · quer MVP curto</p>
+            </a>
+          </li>
+
+          <li>
+            <a href="#" class="lab-item block px-3 py-3 pl-4">
+              <p class="mono font-medium text-ink text-[13px] leading-tight lab-name">@dev.raposa</p>
+              <p class="serif text-[12px] text-muted mt-1 leading-snug">backend + devops · tec. cívica</p>
+            </a>
+          </li>
+
+        </ul>
+
+        <a href="#" class="mono text-[12px] text-accent hover:underline mt-4 inline-block">
+          Ver todos os builders →
+        </a>
+      </div>
+
+    </aside>
+
+    <!-- ============== CENTER COLUMN ============== -->
+    <section class="min-w-0">
+
+      <!-- HERO COMPACT -->
+      <div>
+        <p class="mono text-[11px] uppercase tracking-[.18em] text-muted mb-5">
+          <span class="inline-block w-6 h-px bg-gold align-middle mr-2"></span>
+          // átrio
+        </p>
+        <h1 class="font-sans font-bold text-ink leading-[1.05] text-[34px] sm:text-[38px] lg:text-[44px]"
+            style="letter-spacing: -0.015em;">
+          Comunidade de construção coletiva.
+        </h1>
+        <p class="serif mt-6 text-[17px] leading-[1.6] text-ink/90 max-w-[56ch]">
+          Idearium reúne ideias abertas e builders voluntários em laboratórios
+          temáticos — ciclo aberto de proposta, discussão, construção e publicação.
+        </p>
+      </div>
+
+      <!-- ============== RFC FEED ============== -->
+      <div id="ideias" class="mt-20">
+
+        <div class="flex items-end justify-between flex-wrap gap-y-2 mb-8">
+          <div>
+            <p class="mono text-[11px] uppercase tracking-widest text-muted">// EM DESTAQUE</p>
+            <p class="font-sans text-ink text-[15px] mt-2 font-medium">Três propostas abertas à colaboração</p>
+          </div>
+          <a href="#" class="mono text-[12px] text-accent hover:underline">Índice completo →</a>
+        </div>
+
+        <!-- Column headers -->
+        <div class="hidden md:grid grid-cols-[1fr_110px] gap-6 mono text-[11px]
+                    uppercase tracking-widest text-muted pb-2 border-b border-rule">
+          <span>Proposta</span>
+          <span class="text-right">Status</span>
+        </div>
+
+        <ul class="divide-y divide-rule">
+
+          <!-- RFC 1 — Educação -->
+          <li class="rfc-row">
+            <a href="#" class="block py-7 md:grid md:grid-cols-[1fr_110px] md:gap-6">
+              <div>
+                <p class="mono text-[11px] leading-tight">
+                  <span class="text-gold">RFC-0007</span>
+                  <span class="dot-sep"></span><span class="text-muted">Lab. Educação</span>
+                </p>
+                <h3 class="rfc-title serif font-medium text-ink text-[22px] leading-snug mt-2 transition-colors">
+                  Biblioteca Cooperativa de Bairro
+                </h3>
+                <p class="serif text-[15px] text-muted mt-1.5 leading-[1.55] max-w-[68ch]">
+                  Catálogo leve para vizinhos emprestarem livros entre si, com registro
+                  simples de posse, devolução e reputação baseada em confiança.
+                </p>
+                <p class="mono text-[11px] text-muted mt-3">
+                  <span class="text-ink">@luisa</span>
+                  <span class="dot-sep"></span>8 builders inscritos
+                  <span class="dot-sep"></span>há 2 dias
+                  <span class="hidden sm:inline">
+                    <span class="dot-sep"></span><span class="text-accent">Ler RFC →</span>
+                  </span>
+                </p>
+              </div>
+              <div class="mt-3 md:mt-0 md:text-right md:self-start">
+                <span class="status-chip active">em construção</span>
+              </div>
+            </a>
+          </li>
+
+          <!-- RFC 2 — Cidades -->
+          <li class="rfc-row">
+            <a href="#" class="block py-7 md:grid md:grid-cols-[1fr_110px] md:gap-6">
+              <div>
+                <p class="mono text-[11px] leading-tight">
+                  <span class="text-gold">RFC-0011</span>
+                  <span class="dot-sep"></span><span class="text-muted">Lab. Cidades</span>
+                </p>
+                <h3 class="rfc-title serif font-medium text-ink text-[22px] leading-snug mt-2 transition-colors">
+                  Rastreamento Anônimo de Enchentes Urbanas
+                </h3>
+                <p class="serif text-[15px] text-muted mt-1.5 leading-[1.55] max-w-[68ch]">
+                  Canal colaborativo de relatos geolocalizados sobre alagamentos, que agrega
+                  ocorrências em tempo quase-real como dado aberto, preservando anonimato.
+                </p>
+                <p class="mono text-[11px] text-muted mt-3">
+                  <span class="text-ink">@rafael</span>
+                  <span class="dot-sep"></span>5 builders inscritos
+                  <span class="dot-sep"></span>há 4 dias
+                  <span class="hidden sm:inline">
+                    <span class="dot-sep"></span><span class="text-accent">Ler RFC →</span>
+                  </span>
+                </p>
+              </div>
+              <div class="mt-3 md:mt-0 md:text-right md:self-start">
+                <span class="status-chip review">em discussão</span>
+              </div>
+            </a>
+          </li>
+
+          <!-- RFC 3 — Saúde -->
+          <li class="rfc-row">
+            <a href="#" class="block py-7 md:grid md:grid-cols-[1fr_110px] md:gap-6">
+              <div>
+                <p class="mono text-[11px] leading-tight">
+                  <span class="text-gold">RFC-0014</span>
+                  <span class="dot-sep"></span><span class="text-muted">Lab. Saúde</span>
+                </p>
+                <h3 class="rfc-title serif font-medium text-ink text-[22px] leading-snug mt-2 transition-colors">
+                  Farmácia Solidária por Geolocalização
+                </h3>
+                <p class="serif text-[15px] text-muted mt-1.5 leading-[1.55] max-w-[68ch]">
+                  Rede de pontos comunitários onde pessoas doam medicamentos fechados e
+                  dentro da validade, com busca por proximidade e moderação local.
+                </p>
+                <p class="mono text-[11px] text-muted mt-3">
+                  <span class="text-ink">@marina</span>
+                  <span class="dot-sep"></span>11 builders inscritos
+                  <span class="dot-sep"></span>hoje
+                  <span class="hidden sm:inline">
+                    <span class="dot-sep"></span><span class="text-accent">Ler RFC →</span>
+                  </span>
+                </p>
+              </div>
+              <div class="mt-3 md:mt-0 md:text-right md:self-start">
+                <span class="status-chip active">em construção</span>
+              </div>
+            </a>
+          </li>
+
+        </ul>
+
+        <div class="mt-8 pt-5 border-t border-rule flex items-center justify-between">
+          <p class="mono text-[12px] text-muted">3 de 47 ideias ativas</p>
+          <a href="#" class="mono text-[12px] text-accent hover:underline">Ver todas as 47 ideias →</a>
+        </div>
+      </div>
+
+      <!-- ============== MOBILE: LABS GRID ============== -->
+      <div class="lg:hidden mt-14">
+        <p class="mono text-[11px] uppercase tracking-widest text-muted mb-4">// LABORATÓRIOS</p>
+        <div class="grid grid-cols-2 gap-px bg-rule border border-rule rounded-sm overflow-hidden">
+          <a href="#" class="bg-card p-4">
+            <p class="font-sans font-semibold text-ink text-[14px]">◈ Lab. Educação</p>
+            <p class="mono text-[11px] text-muted mt-1">12 ideias · 34 builders</p>
+          </a>
+          <a href="#" class="bg-card p-4">
+            <p class="font-sans font-semibold text-ink text-[14px]">◇ Lab. Cidades</p>
+            <p class="mono text-[11px] text-muted mt-1">9 ideias · 22 builders</p>
+          </a>
+          <a href="#" class="bg-card p-4">
+            <p class="font-sans font-semibold text-ink text-[14px]">✚ Lab. Saúde</p>
+            <p class="mono text-[11px] text-muted mt-1">7 ideias · 18 builders</p>
+          </a>
+          <a href="#" class="bg-card p-4">
+            <p class="font-sans font-semibold text-ink text-[14px]">♪ Lab. Cultura</p>
+            <p class="mono text-[11px] text-muted mt-1">6 ideias · 14 builders</p>
+          </a>
+          <a href="#" class="bg-card p-4">
+            <p class="font-sans font-semibold text-ink text-[14px]">⌘ Lab. Tec. Cívica</p>
+            <p class="mono text-[11px] text-muted mt-1">8 ideias · 26 builders</p>
+          </a>
+          <a href="#" class="bg-card p-4">
+            <p class="font-sans font-semibold text-ink text-[14px]">◆ Lab. Econ. Solidária</p>
+            <p class="mono text-[11px] text-muted mt-1">5 ideias · 14 builders</p>
+          </a>
+        </div>
+      </div>
+
+      <!-- ============== MOBILE: COMO FUNCIONA ============== -->
+      <div class="lg:hidden mt-12">
+        <p class="mono text-[11px] uppercase tracking-widest text-muted mb-4">// COMO FUNCIONA</p>
+        <div class="border border-rule rounded-sm bg-card">
+          <div class="step-row p-4">
+            <div class="flex items-baseline gap-3">
+              <span class="mono text-[24px] text-gold leading-none">01</span>
+              <h4 class="font-sans font-semibold text-ink text-[15px]">Proponha uma ideia</h4>
+            </div>
+            <p class="serif text-[13px] text-muted mt-1.5 leading-[1.55]">
+              Escreva uma RFC curta. Abre automaticamente pra discussão.
+            </p>
+          </div>
+          <div class="step-row p-4">
+            <div class="flex items-baseline gap-3">
+              <span class="mono text-[24px] text-gold leading-none">02</span>
+              <h4 class="font-sans font-semibold text-ink text-[15px]">Reúna builders</h4>
+            </div>
+            <p class="serif text-[13px] text-muted mt-1.5 leading-[1.55]">
+              Pessoas interessadas se inscrevem. Escopo é co-definido.
+            </p>
+          </div>
+          <div class="step-row p-4">
+            <div class="flex items-baseline gap-3">
+              <span class="mono text-[24px] text-gold leading-none">03</span>
+              <h4 class="font-sans font-semibold text-ink text-[15px]">Construa aberto</h4>
+            </div>
+            <p class="serif text-[13px] text-muted mt-1.5 leading-[1.55]">
+              Implementação pública. Crédito compartilhado.
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ============== RIGHT SIDEBAR (DESKTOP ONLY) ============== -->
+    <aside class="hidden lg:block col-sticky">
+
+      <!-- CTA — ESCREVA UMA IDEIA -->
+      <div class="cta-box p-7">
+        <p class="mono text-[11px] uppercase tracking-widest text-accent">// ESCREVA UMA IDEIA</p>
+
+        <p class="font-sans font-semibold text-ink text-[18px] mt-5 leading-snug" style="letter-spacing: -0.01em;">não precisa saber fazer.</p>
+        <p class="font-sans font-semibold text-ink text-[18px] leading-snug" style="letter-spacing: -0.01em;">precisa só querer que aconteça.</p>
+
+        <div class="text-center my-7"><span class="ornament text-[20px]">✺</span></div>
+
+        <p class="mono text-[11px] text-muted">rascunho · só você vê</p>
+
+        <div class="pseudo-input mt-3 p-4">
+          <span class="font-sans text-[16px] text-muted">e se a gente<span class="caret"></span></span>
+        </div>
+
+        <button class="cta-btn mt-6" type="button">[ começar a escrever ]</button>
+
+        <p class="mono text-[11px] text-muted mt-5 leading-relaxed">
+          leva uns 3 minutos. ninguém lê até você publicar.
+        </p>
+
+        <div class="border-t border-rule my-5"></div>
+
+        <p class="serif text-[13px] text-muted leading-relaxed">
+          — prometemos não mandar email chato. só quando alguém levantar a mão pra construir.
+        </p>
+      </div>
+
+      <!-- COMO FUNCIONA (compact, no box) -->
+      <div id="como-funciona" class="mt-10">
+        <p class="mono text-[11px] uppercase tracking-widest text-muted mb-3">// COMO FUNCIONA</p>
+
+        <div class="border-t border-rule">
+
+          <div class="step-row py-4">
+            <div class="flex items-baseline gap-3">
+              <span class="mono text-[22px] text-gold leading-none">01</span>
+              <h4 class="font-sans font-semibold text-ink text-[14px]">Proponha uma ideia</h4>
+            </div>
+            <p class="serif text-[13px] text-muted mt-1.5 leading-[1.55]">
+              Escreva uma RFC curta. Abre automaticamente pra discussão.
+            </p>
+          </div>
+
+          <div class="step-row py-4">
+            <div class="flex items-baseline gap-3">
+              <span class="mono text-[22px] text-gold leading-none">02</span>
+              <h4 class="font-sans font-semibold text-ink text-[14px]">Reúna builders</h4>
+            </div>
+            <p class="serif text-[13px] text-muted mt-1.5 leading-[1.55]">
+              Pessoas interessadas se inscrevem. Escopo é co-definido.
+            </p>
+          </div>
+
+          <div class="step-row py-4">
+            <div class="flex items-baseline gap-3">
+              <span class="mono text-[22px] text-gold leading-none">03</span>
+              <h4 class="font-sans font-semibold text-ink text-[14px]">Construa aberto</h4>
+            </div>
+            <p class="serif text-[13px] text-muted mt-1.5 leading-[1.55]">
+              Implementação pública. Crédito compartilhado.
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+    </aside>
+
+  </div><!-- /3-col grid -->
+
+</main>
+
+<!-- ============== FOOTER (identical to v1) ============== -->
+<footer class="border-t border-rule mt-10">
+  <div class="max-w-salon mx-auto px-5 sm:px-8 py-12 grid grid-cols-1 sm:grid-cols-3 gap-10">
+
+    <div>
+      <p class="font-sans font-bold tracking-wider text-ink text-[14px]">
+        IDEARIUM · <span class="mono font-medium text-muted">2026</span>
+      </p>
+      <p class="serif text-[15px] text-muted mt-3 max-w-xs leading-[1.55]">
+        Um projeto aberto de construção coletiva, mantido por voluntários e apoiadores.
+      </p>
+    </div>
+
+    <nav class="text-[14px]">
+      <p class="mono text-[11px] uppercase tracking-widest text-muted mb-3">Comunidade</p>
+      <ul class="space-y-2">
+        <li><a href="#" class="text-ink hover:text-accent">Código de conduta</a></li>
+        <li><a href="#" class="text-ink hover:text-accent">Governança</a></li>
+        <li><a href="#" class="text-ink hover:text-accent">Participantes</a></li>
+        <li><a href="#" class="text-ink hover:text-accent">Transparência</a></li>
+      </ul>
+    </nav>
+
+    <nav class="text-[14px]">
+      <p class="mono text-[11px] uppercase tracking-widest text-muted mb-3">Acompanhe</p>
+      <ul class="space-y-2">
+        <li><a href="#" class="text-ink hover:text-accent">GitHub</a></li>
+        <li><a href="#" class="text-ink hover:text-accent">RSS</a></li>
+        <li><a href="#" class="text-ink hover:text-accent">Newsletter mensal</a></li>
+      </ul>
+    </nav>
+
+  </div>
+
+  <div class="border-t border-rule">
+    <div class="max-w-salon mx-auto px-5 sm:px-8 py-5 flex flex-wrap items-center gap-3 justify-between">
+      <p class="mono text-[11px] text-muted">
+        CC BY-SA 4.0 · Conteúdo publicado sob Creative Commons Atribuição-CompartilhaIgual
+      </p>
+      <p class="mono text-[11px] text-muted">
+        v0.2 · idearium.community / átrio
+      </p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
