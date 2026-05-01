@@ -8,6 +8,33 @@
 
 ---
 
+## Status atual (atualizado 2026-05-01)
+
+Branch `development`. **106 testes e2e passando**. Endpoints públicos `/labs`, `/rfcs`, `/tags`, `/search`, perfis e o fluxo completo de auth+inscrições+comentários estão funcionais.
+
+| Etapa | Status | Commit | Notas |
+|-------|--------|--------|-------|
+| 0. Setup esqueleto | ✅ feito | `22b10b6` | Falta criar conta Sentry e fazer 1º deploy (Railway/Fly) |
+| 1. Auth + Users | ✅ feito | `3fbbdb2` | email/senha + JWT + refresh. OAuth fica para Etapa 6 |
+| 1.5 Tests infra | ✅ feito | `8bccf77` | Postgres como service no CI, suite e2e configurada |
+| 2. Labs + RFCs CRUD | ✅ feito | `af579f2` | Sequência Postgres atômica para RFC-NNNN |
+| 3. Inscrições + Comentários | ✅ feito | `a343d0b` | Transição IN_DISCUSSION ↔ IN_BUILDING automática |
+| 4. Tags + Busca FTS | ✅ feito | `e9cebb6` | Cross-language adiada (ver §6.1) |
+| **5. Notificações** | ⏳ próxima | — | Síncronas, sem WebSocket |
+| 6. OAuth + email + verify | ⏳ planejada | — | GitHub + Google + Resend |
+| 7. Moderação leve | ⏳ planejada | — | Reports, hide, suspend |
+| 8. Hardening + RSS + API pública | ⏳ planejada | — | Rate limit, CSP, OpenAPI export |
+| 9. Polimento + go-live | ⏳ planejada | — | Seeds reais, status page |
+
+### Pendências externas (não-código)
+- [ ] Criar projeto no Sentry e adicionar `SENTRY_DSN` ao `.env` (visualmente: Etapa 0 só fica 100% quando o primeiro erro real for capturado)
+- [ ] Decidir provedor (Railway / Fly.io) e fazer primeiro deploy do branch `main` (e configurar deploy automático)
+- [ ] Provisionar Postgres gerenciado em produção (Railway / Neon / Supabase)
+- [ ] (opcional) Configurar domínio `idearium.community`
+- [ ] Quando começar a Etapa 6: criar OAuth apps no GitHub e no Google Cloud Console; abrir conta no Resend
+
+---
+
 ## 0. Princípios deste roadmap
 
 1. **MVP feio e funcional > MVP bonito e ausente.** Cada etapa entrega um pedaço usável em produção.
@@ -266,13 +293,144 @@ enum ReportStatus { OPEN RESOLVED DISMISSED }
 
 ---
 
+## 2.5. Estado atual do código — referência rápida
+
+> Esta seção é o "TL;DR" do que já existe no repo, para Claude (ou Kae voltando depois) entender rápido o ponto em que estamos sem ler todas as etapas.
+
+### Repo
+
+```
+idearium/  (branch development)
+├── apps/api/                    ← backend NestJS (Kae)
+│   ├── src/
+│   │   ├── auth/                ← register, login, refresh rotativo, logout, /me
+│   │   ├── users/               ← /users/me, /users/:username, /users/:username/rfcs
+│   │   ├── builders/            ← BuilderProfile + lista para sidebar
+│   │   ├── labs/                ← /labs com contadores
+│   │   ├── rfcs/                ← CRUD, publish (sequence Postgres), versions, archive
+│   │   ├── enrollments/         ← /rfcs/:id/enroll + transição IN_DISCUSSION ↔ IN_BUILDING
+│   │   ├── comments/            ← lista, create, edit, soft delete
+│   │   ├── tags/                ← /tags, /tags/:slug, POST /rfcs/:id/tags
+│   │   ├── search/              ← FTS bilíngue via tsquery + ts_rank
+│   │   ├── health/              ← /health com check de DB
+│   │   ├── prisma/              ← PrismaService global
+│   │   ├── common/              ← decorators, filters, pagination, slug.util
+│   │   ├── config/              ← validateEnv (handcrafted, sem class-validator)
+│   │   ├── i18n/{pt-BR,en}/     ← errors.json, validation.json, email.json
+│   │   ├── instrument.ts        ← Sentry init (precisa ser primeiro import)
+│   │   ├── app.module.ts
+│   │   └── main.ts              ← Swagger /docs em dev, I18nValidationPipe global
+│   ├── prisma/
+│   │   ├── schema.prisma        ← User, BuilderProfile, RefreshToken, Lab, Rfc,
+│   │   │                          RfcVersion, Enrollment, Comment, Tag, TagsOnRfcs
+│   │   ├── migrations/          ← 4 migrations aplicadas
+│   │   └── seed.ts              ← 6 labs do mockup
+│   └── test/
+│       ├── *.e2e-spec.ts        ← 9 suites, 106 testes
+│       ├── helpers/             ← createTestApp, cleanDatabase, registerUser, createPublishedRfc
+│       └── setup-e2e.ts         ← roda migrations + seed antes do Jest
+├── apps/web/                    ← (não criado ainda — Gabriele faz)
+├── mockups/home/index.html      ← referência de design
+├── docker-compose.yml           ← Postgres 16 local
+├── .github/workflows/ci.yml     ← lint + build + e2e com Postgres como service
+├── VISAO.md                     ← SSOT do projeto
+└── ROADMAP_BACKEND.md           ← este arquivo
+```
+
+### Endpoints públicos (resumo)
+
+| Verbo | Path | Descrição | Auth |
+|-------|------|-----------|------|
+| `GET` | `/health` | health + db check | — |
+| `POST` | `/auth/register` | criar conta | — |
+| `POST` | `/auth/login` | login email/senha | — |
+| `POST` | `/auth/refresh` | rotaciona tokens | — |
+| `POST` | `/auth/logout` | revoga refresh | — |
+| `GET` | `/auth/me` | user atual (compacto) | sim |
+| `GET` | `/users/:username` | perfil público | — |
+| `GET/PATCH` | `/users/me` | perfil próprio | sim |
+| `GET` | `/users/:username/rfcs` | RFCs do user | — |
+| `GET` | `/users/:username/enrollments` | inscrições do user | — |
+| `GET` | `/builders` | lista paginada | — |
+| `GET/PATCH` | `/builders/me` | upsert BuilderProfile | sim |
+| `GET` | `/builders/:username` | profile específico | — |
+| `GET` | `/labs` | labs + rfcsCount | — |
+| `GET` | `/labs/:slug` | detalhe | — |
+| `POST` | `/rfcs` | criar DRAFT | sim |
+| `GET` | `/rfcs?lab=&status=&locale=&sort=` | feed | — |
+| `GET` | `/rfcs/featured` | top 3 | — |
+| `GET` | `/rfcs/:slug` | detalhe (rascunho 404 a outros) | opcional |
+| `PATCH` | `/rfcs/:id` | edita; body novo cria versão | sim (autor) |
+| `POST` | `/rfcs/:id/publish` | DRAFT → IN_DISCUSSION + número | sim (autor) |
+| `POST` | `/rfcs/:id/archive` | → ARCHIVED | sim (autor) |
+| `GET` | `/rfcs/:id/versions` | histórico | opcional |
+| `POST/DELETE` | `/rfcs/:id/enroll` | inscrever-se / sair | sim |
+| `GET` | `/rfcs/:id/enrollments` | inscritos ativos | opcional |
+| `GET/POST` | `/rfcs/:id/comments` | discussão linear | sim para POST |
+| `PATCH/DELETE` | `/comments/:id` | editar/deletar (autor) | sim |
+| `GET` | `/rfcs/:id/tags` | tags da RFC | — |
+| `POST` | `/rfcs/:id/tags` | sync tags da RFC | sim (autor) |
+| `GET` | `/tags` | lista por uso | — |
+| `GET` | `/tags/:slug` | tag + RFCs | — |
+| `GET` | `/search?q=&locale=&lab=` | FTS por idioma | — |
+
+### Decisões executivas tomadas durante a implementação
+
+- **Refresh tokens** são opacos (random base64url 48 bytes), armazenados **hashados** (sha256) em `RefreshToken`. Rotação a cada refresh, com `revokedAt` para logout/audit.
+- **Numeração de RFCs** via `nextval('rfc_number_seq')` — atribuída só na publicação, em transação atômica.
+- **Versões** são snapshots do `body` apenas (não title/summary). Criação gera versão 1; edição só cria nova versão se body mudou de fato.
+- **Tags** são criadas on-the-fly via slugify, sync substitui o set inteiro. `usageCount` é computado via `_count` (não denormalizado).
+- **Status transições** das RFCs (`IN_DISCUSSION` ↔ `IN_BUILDING`) são automáticas via `EnrollmentsService.recomputeRfcStatus`, em transação após cada enroll/leave.
+- **Comentários** soft-deletados retornam `body: '[removido]'` na API. Edição em comentário deletado dá 403.
+- **Visibilidade de DRAFT**: rascunhos só aparecem ao autor (e `MAINTAINER`); rotas como `/rfcs/:slug`, `/rfcs/:id/comments`, `/rfcs/:id/versions`, `/rfcs/:id/enrollments` usam `OptionalJwtAuthGuard` para fazer essa diferenciação.
+- **Sentry** carregado via `instrument.ts` (`import './instrument'` deve ser a primeira linha de `main.ts`).
+- **i18n em dev** lê de `src/i18n/` direto (não `dist/i18n/`) para evitar `ENOENT` durante recompilação. Em prod e test, usa `__dirname/i18n`.
+
+### Cross-language search — limite conhecido
+
+A busca filtra por `locale` (`pt-BR` ou `en`, default `pt-BR`). Não há "buscar em tudo" porque o `search_vector` é construído com `regconfig` específico do idioma da RFC; uma `tsquery` em `simple` não casa com tokens stemmados. Se virar requisito, adicionar coluna `search_vector_simple` paralela (~30min).
+
+### Variáveis de ambiente em uso
+
+```env
+NODE_ENV=development|test|production
+PORT=3000
+APP_URL=http://localhost:3000
+WEB_URL=http://localhost:4200
+APP_VERSION=0.1.0
+LOG_LEVEL=debug|info|warn|error|fatal
+DATABASE_URL=postgresql://idearium:idearium_dev@localhost:5432/idearium?schema=public
+JWT_ACCESS_SECRET=<32-byte hex>
+JWT_ACCESS_EXPIRES=15m
+JWT_REFRESH_EXPIRES_DAYS=30
+SENTRY_DSN=               # vazio desabilita
+SENTRY_ENVIRONMENT=development
+```
+
+### Como rodar localmente
+
+```bash
+npm install
+npm run db:up                                    # postgres 16 em docker
+cp apps/api/.env.example apps/api/.env           # gerar JWT_ACCESS_SECRET
+cd apps/api && npx prisma migrate dev && npx prisma db seed && cd ../..
+npm run dev:api                                  # API em :3000, Swagger em :3000/docs
+
+# testes (precisa criar o DB de testes uma vez):
+docker exec idearium-postgres psql -U idearium -d postgres -c "CREATE DATABASE idearium_test;"
+cp apps/api/.env.test.example apps/api/.env.test
+npm run test:e2e -w apps/api
+```
+
+---
+
 ## 3. Etapas
 
 Cada etapa: objetivo, deliverables, dependências adicionadas, endpoints novos, deploy, definition of done.
 
 ---
 
-### **Etapa 0 — Setup esqueleto** *(1 fim de semana, ~8h)*
+### **Etapa 0 — Setup esqueleto** *(1 fim de semana, ~8h)* — ✅ CONCLUÍDA `22b10b6`
 
 **Objetivo:** ter um repo com NestJS rodando, conectado a Postgres local via Prisma, com 1 endpoint trivial em produção.
 
@@ -308,7 +466,7 @@ Cada etapa: objetivo, deliverables, dependências adicionadas, endpoints novos, 
 
 ---
 
-### **Etapa 1 — Auth + Users** *(1 semana, ~15h)*
+### **Etapa 1 — Auth + Users** *(1 semana, ~15h)* — ✅ CONCLUÍDA `3fbbdb2`
 
 **Objetivo:** alguém consegue criar conta, fazer login, ver seu perfil.
 
@@ -355,7 +513,7 @@ PATCH  /builders/me                { headline, topics, isOpenToWork }
 
 ---
 
-### **Etapa 2 — Labs + RFCs CRUD** *(2 semanas, ~25h)*
+### **Etapa 2 — Labs + RFCs CRUD** *(2 semanas, ~25h)* — ✅ CONCLUÍDA `af579f2`
 
 **Objetivo:** o coração do produto. Criar, listar, ver, editar, publicar RFCs.
 
@@ -401,7 +559,7 @@ POST   /upload/rfc-thumbnail
 
 ---
 
-### **Etapa 3 — Inscrições e comentários** *(1 semana, ~12h)*
+### **Etapa 3 — Inscrições e comentários** *(1 semana, ~12h)* — ✅ CONCLUÍDA `a343d0b`
 
 **Objetivo:** uma RFC pode ter discussão e gente se inscrevendo para construir.
 
@@ -434,7 +592,7 @@ GET    /users/:username/rfcs         → "RFCs que esse usuário escreveu"
 
 ---
 
-### **Etapa 4 — Tags + descoberta + busca** *(1 semana, ~12h)*
+### **Etapa 4 — Tags + descoberta + busca** *(1 semana, ~12h)* — ✅ CONCLUÍDA `e9cebb6`
 
 **Objetivo:** filtros, busca textual, navegação por tag.
 
@@ -486,7 +644,7 @@ A busca, por padrão, filtra pelo locale do usuário (ou do header). Pode ser de
 
 ---
 
-### **Etapa 5 — Notificações (assíncronas, sem WebSocket)** *(4 dias, ~10h)*
+### **Etapa 5 — Notificações (assíncronas, sem WebSocket)** *(4 dias, ~10h)* — ⏳ PRÓXIMA
 
 **Objetivo:** quando algo relevante acontece, o usuário recebe notificação. Sem real-time — polling do front basta.
 
@@ -515,7 +673,7 @@ PATCH  /notifications/read-all
 
 ---
 
-### **Etapa 6 — OAuth (GitHub + Google) + reset de senha + email verification** *(1 semana, ~12h)*
+### **Etapa 6 — OAuth (GitHub + Google) + reset de senha + email verification** *(1 semana, ~12h)* — ⏳ PLANEJADA
 
 **Objetivo:** fechar o loop de autenticação para algo aceitável em produção pública. As três estratégias decididas na fundação (`VISAO.md` §10, decisão #2) ficam disponíveis.
 
@@ -556,7 +714,7 @@ DELETE /users/me/link-google
 
 ---
 
-### **Etapa 7 — Moderação leve + admin endpoints** *(3 dias, ~8h)*
+### **Etapa 7 — Moderação leve + admin endpoints** *(3 dias, ~8h)* — ⏳ PLANEJADA
 
 **Objetivo:** dar ao Kae (e quem mais virar `MAINTAINER`) ferramentas mínimas para responder a abuso.
 
@@ -583,7 +741,7 @@ GET    /admin/stats                 → contagens globais
 
 ---
 
-### **Etapa 8 — Hardening + observabilidade + RSS + API pública** *(1 semana, ~15h)*
+### **Etapa 8 — Hardening + observabilidade + RSS + API pública** *(1 semana, ~15h)* — ⏳ PLANEJADA
 
 **Objetivo:** o sistema fica resistente a ataques bobos, observável e tem ganchos públicos.
 
@@ -618,7 +776,7 @@ GET    /admin/stats                 → contagens globais
 
 ---
 
-### **Etapa 9 — Polimento, fixtures e go-live** *(1 semana, ~15h)*
+### **Etapa 9 — Polimento, fixtures e go-live** *(1 semana, ~15h)* — ⏳ PLANEJADA
 
 **Objetivo:** o backend está pronto para o lançamento real.
 
