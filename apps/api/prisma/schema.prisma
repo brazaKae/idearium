@@ -1,6 +1,6 @@
 // Idearium — Prisma schema
 // Schema canônico vive aqui. Modelos de domínio são adicionados conforme as etapas
-// do ROADMAP_BACKEND.md. Etapa atual: 1 (Auth + Users + BuilderProfile).
+// do ROADMAP_BACKEND.md. Etapa atual: 2 (Labs + RFCs + RfcVersion).
 
 generator client {
   provider = "prisma-client-js"
@@ -46,6 +46,7 @@ model User {
 
   builderProfile BuilderProfile?
   refreshTokens  RefreshToken[]
+  authoredRfcs   Rfc[]            @relation("AuthoredRfcs")
 }
 
 model BuilderProfile {
@@ -72,4 +73,80 @@ model RefreshToken {
 
   @@index([userId])
   @@index([expiresAt])
+}
+
+// =====================================================
+// Etapa 2 — Labs + RFCs
+// =====================================================
+
+model Lab {
+  id          String   @id @default(uuid())
+  slug        String   @unique
+  name        String
+  glyph       String
+  description String?
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  rfcs Rfc[]
+
+  @@index([order])
+}
+
+enum RfcStatus {
+  DRAFT
+  IN_DISCUSSION
+  IN_BUILDING
+  PUBLISHED
+  ARCHIVED
+}
+
+enum Visibility {
+  PUBLIC
+  UNLISTED
+  PRIVATE
+}
+
+model Rfc {
+  id              String     @id @default(uuid())
+  number          Int?       @unique  // atribuído atomicamente na publicação via sequence
+  slug            String     @unique
+  title           String
+  summary         String
+  body            String
+  locale          String     // "pt-BR" | "en"
+  status          RfcStatus  @default(DRAFT)
+  visibility      Visibility @default(PUBLIC)
+  authorId        String
+  author          User       @relation("AuthoredRfcs", fields: [authorId], references: [id])
+  labId           String
+  lab             Lab        @relation(fields: [labId], references: [id])
+  translationOfId String?
+  translationOf   Rfc?       @relation("Translations", fields: [translationOfId], references: [id])
+  translations    Rfc[]      @relation("Translations")
+  publishedAt     DateTime?
+  archivedAt      DateTime?
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  versions RfcVersion[]
+
+  @@index([status, publishedAt])
+  @@index([labId])
+  @@index([locale, status])
+  @@index([authorId])
+}
+
+model RfcVersion {
+  id        String   @id @default(uuid())
+  rfcId     String
+  rfc       Rfc      @relation(fields: [rfcId], references: [id], onDelete: Cascade)
+  version   Int
+  body      String
+  authorId  String
+  createdAt DateTime @default(now())
+
+  @@unique([rfcId, version])
+  @@index([rfcId])
 }

@@ -16,7 +16,9 @@ import { BuildersModule } from './builders/builders.module';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { validateEnv, type AppEnv } from './config/env.validation';
 import { HealthModule } from './health/health.module';
+import { LabsModule } from './labs/labs.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { RfcsModule } from './rfcs/rfcs.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -58,6 +60,8 @@ import { UsersModule } from './users/users.module';
     AuthModule,
     UsersModule,
     BuildersModule,
+    LabsModule,
+    RfcsModule,
     HealthModule,
   ],
   providers: [

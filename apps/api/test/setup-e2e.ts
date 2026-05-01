@@ -31,4 +31,11 @@ export default async function globalSetup(): Promise<void> {
     env: { ...process.env, DATABASE_URL: dbUrl },
     stdio: 'inherit',
   });
+
+  // 4. seed (idempotente; cria os 6 labs)
+  execSync('npx prisma db seed', {
+    cwd: join(__dirname, '..'),
+    env: { ...process.env, DATABASE_URL: dbUrl },
+    stdio: 'inherit',
+  });
 }

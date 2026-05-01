@@ -34,3 +34,50 @@ export const registerUser = async (
 };
 
 export const authHeader = (token: string) => ({ Authorization: `Bearer ${token}` });
+
+export const getLabIdBySlug = async (app: INestApplication, slug: string): Promise<string> => {
+  const res = await request(app.getHttpServer()).get(`/labs/${slug}`).expect(200);
+  return res.body.id;
+};
+
+export type CreatedRfc = {
+  id: string;
+  slug: string;
+  number: number | null;
+  status: string;
+};
+
+export const createDraftRfc = async (
+  app: INestApplication,
+  user: RegisteredUser,
+  overrides: Partial<{
+    title: string;
+    summary: string;
+    body: string;
+    labSlug: string;
+    locale: 'pt-BR' | 'en';
+  }> = {},
+): Promise<CreatedRfc> => {
+  const labId = await getLabIdBySlug(app, overrides.labSlug ?? 'educacao');
+
+  const res = await request(app.getHttpServer())
+    .post('/rfcs')
+    .set(authHeader(user.accessToken))
+    .send({
+      title: overrides.title ?? `RFC de teste ${Date.now()}`,
+      summary: overrides.summary ?? 'Resumo de teste para a RFC.',
+      body:
+        overrides.body ??
+        'Corpo da RFC em markdown com pelo menos cinquenta caracteres para passar pela validação.',
+      labId,
+      locale: overrides.locale,
+    })
+    .expect(201);
+
+  return {
+    id: res.body.id,
+    slug: res.body.slug,
+    number: res.body.number,
+    status: res.body.status,
+  };
+};

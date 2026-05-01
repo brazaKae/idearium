@@ -28,7 +28,10 @@ export const createTestApp = async (): Promise<INestApplication> => {
 
 export const cleanDatabase = async (app: INestApplication): Promise<void> => {
   const prisma = app.get(PrismaService);
+  // Ordem importa por causa de FKs. Labs NÃO são truncados (vêm do seed).
   await prisma.$transaction([
+    prisma.rfcVersion.deleteMany(),
+    prisma.rfc.deleteMany(),
     prisma.refreshToken.deleteMany(),
     prisma.builderProfile.deleteMany(),
     prisma.user.deleteMany(),
