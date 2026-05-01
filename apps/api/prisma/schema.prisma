@@ -1,0 +1,20 @@
+// Idearium — Prisma schema
+// Schema canônico vive aqui. Modelos de domínio serão adicionados conforme as etapas
+// do ROADMAP_BACKEND.md (Etapa 1: User; Etapa 2: Lab, Rfc, RfcVersion; ...).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Placeholder para Prisma aceitar o schema vazio antes da Etapa 1.
+// Pode ser usado depois para metadados internos (versão de schema, flags, etc).
+model AppMeta {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}

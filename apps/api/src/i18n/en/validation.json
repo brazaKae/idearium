@@ -1,0 +1,7 @@
+{
+  "IS_EMAIL": "Must be a valid email.",
+  "IS_NOT_EMPTY": "Required field.",
+  "IS_STRING": "Must be a string.",
+  "MIN_LENGTH": "Must have at least $constraint1 characters.",
+  "MAX_LENGTH": "Must have at most $constraint1 characters."
+}

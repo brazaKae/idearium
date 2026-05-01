@@ -1,0 +1,23 @@
+{
+  "name": "idearium",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Comunidade de construção coletiva — RFCs, laboratórios temáticos, builders voluntários.",
+  "license": "CC-BY-SA-4.0",
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  },
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev:api": "npm run start:dev -w apps/api",
+    "build:api": "npm run build -w apps/api",
+    "lint:api": "npm run lint -w apps/api",
+    "test:api": "npm run test -w apps/api",
+    "db:up": "docker compose up -d postgres",
+    "db:down": "docker compose down",
+    "db:logs": "docker compose logs -f postgres"
+  }
+}

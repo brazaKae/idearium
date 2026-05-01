@@ -1,0 +1,6 @@
+{
+  "GENERIC": "Something went wrong.",
+  "NOT_FOUND": "Resource not found.",
+  "UNAUTHORIZED": "Authentication required.",
+  "FORBIDDEN": "You do not have permission for this."
+}
