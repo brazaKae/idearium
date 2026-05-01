@@ -1,6 +1,6 @@
 // Idearium — Prisma schema
 // Schema canônico vive aqui. Modelos de domínio são adicionados conforme as etapas
-// do ROADMAP_BACKEND.md. Etapa atual: 2 (Labs + RFCs + RfcVersion).
+// do ROADMAP_BACKEND.md. Etapa atual: 3 (Enrollments + Comments).
 
 generator client {
   provider = "prisma-client-js"
@@ -47,6 +47,8 @@ model User {
   builderProfile BuilderProfile?
   refreshTokens  RefreshToken[]
   authoredRfcs   Rfc[]            @relation("AuthoredRfcs")
+  enrollments    Enrollment[]
+  comments       Comment[]
 }
 
 model BuilderProfile {
@@ -130,7 +132,9 @@ model Rfc {
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
 
-  versions RfcVersion[]
+  versions    RfcVersion[]
+  enrollments Enrollment[]
+  comments    Comment[]
 
   @@index([status, publishedAt])
   @@index([labId])
@@ -149,4 +153,46 @@ model RfcVersion {
 
   @@unique([rfcId, version])
   @@index([rfcId])
+}
+
+// =====================================================
+// Etapa 3 — Enrollments + Comments
+// =====================================================
+
+enum EnrollmentRole {
+  BUILDER
+  REVIEWER
+  LEAD
+}
+
+model Enrollment {
+  id        String         @id @default(uuid())
+  rfcId     String
+  rfc       Rfc            @relation(fields: [rfcId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      EnrollmentRole @default(BUILDER)
+  message   String?
+  createdAt DateTime       @default(now())
+  leftAt    DateTime?
+
+  @@unique([rfcId, userId])
+  @@index([userId])
+  @@index([rfcId, leftAt])
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  rfcId     String
+  rfc       Rfc      @relation(fields: [rfcId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+  body      String
+  isEdited  Boolean  @default(false)
+  isDeleted Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([rfcId, createdAt])
+  @@index([authorId])
 }

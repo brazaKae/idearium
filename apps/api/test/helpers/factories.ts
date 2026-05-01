@@ -47,6 +47,38 @@ export type CreatedRfc = {
   status: string;
 };
 
+export const publishRfc = async (
+  app: INestApplication,
+  user: RegisteredUser,
+  rfcId: string,
+): Promise<CreatedRfc> => {
+  const res = await request(app.getHttpServer())
+    .post(`/rfcs/${rfcId}/publish`)
+    .set(authHeader(user.accessToken))
+    .expect(200);
+  return {
+    id: res.body.id,
+    slug: res.body.slug,
+    number: res.body.number,
+    status: res.body.status,
+  };
+};
+
+export const createPublishedRfc = async (
+  app: INestApplication,
+  user: RegisteredUser,
+  overrides: Partial<{
+    title: string;
+    summary: string;
+    body: string;
+    labSlug: string;
+    locale: 'pt-BR' | 'en';
+  }> = {},
+): Promise<CreatedRfc> => {
+  const draft = await createDraftRfc(app, user, overrides);
+  return publishRfc(app, user, draft.id);
+};
+
 export const createDraftRfc = async (
   app: INestApplication,
   user: RegisteredUser,

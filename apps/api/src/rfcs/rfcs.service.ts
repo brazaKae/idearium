@@ -148,6 +148,37 @@ export class RfcsService {
     });
   }
 
+  async listAuthoredBy(
+    username: string,
+    page: number,
+    limit: number,
+  ): Promise<PaginatedResult<RfcListItem>> {
+    const author = await this.prisma.user.findFirst({
+      where: { username, isActive: true },
+      select: { id: true },
+    });
+    if (!author) throw new NotFoundException('user not found');
+
+    const where: Prisma.RfcWhereInput = {
+      authorId: author.id,
+      visibility: 'PUBLIC',
+      status: { in: PUBLIC_RFC_STATUSES },
+    };
+
+    const [data, total] = await Promise.all([
+      this.prisma.rfc.findMany({
+        where,
+        select: RFC_LIST_SELECT,
+        orderBy: { publishedAt: 'desc' },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      this.prisma.rfc.count({ where }),
+    ]);
+
+    return buildPaginatedResult(data, total, page, limit);
+  }
+
   // ---------- read ----------
 
   async findBySlug(slug: string, viewer?: AuthUser): Promise<RfcDetail> {

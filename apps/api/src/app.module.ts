@@ -13,8 +13,10 @@ import {
 import { join } from 'path';
 import { AuthModule } from './auth/auth.module';
 import { BuildersModule } from './builders/builders.module';
+import { CommentsModule } from './comments/comments.module';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { validateEnv, type AppEnv } from './config/env.validation';
+import { EnrollmentsModule } from './enrollments/enrollments.module';
 import { HealthModule } from './health/health.module';
 import { LabsModule } from './labs/labs.module';
 import { PrismaModule } from './prisma/prisma.module';
@@ -69,6 +71,8 @@ import { UsersModule } from './users/users.module';
     BuildersModule,
     LabsModule,
     RfcsModule,
+    EnrollmentsModule,
+    CommentsModule,
     HealthModule,
   ],
   providers: [
