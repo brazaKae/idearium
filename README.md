@@ -45,7 +45,20 @@ npm run prisma:generate -w apps/api
 npm run dev:api
 ```
 
-API disponível em `http://localhost:3000`. Health check: `GET /health`.
+API disponível em `http://localhost:3000`. Health check: `GET /health`. Swagger UI: `http://localhost:3000/docs`.
+
+### Testes (e2e)
+
+```bash
+# 1. Banco de testes (uma vez)
+docker exec idearium-postgres psql -U idearium -d postgres -c "CREATE DATABASE idearium_test;"
+
+# 2. Configurar env de teste
+cp apps/api/.env.test.example apps/api/.env.test
+
+# 3. Rodar suite e2e
+npm run test:e2e -w apps/api
+```
 
 ## Licença
 

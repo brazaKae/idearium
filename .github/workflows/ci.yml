@@ -11,6 +11,28 @@ jobs:
     name: API — lint, build, test
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: idearium_test
+          POSTGRES_USER: idearium
+          POSTGRES_PASSWORD: idearium_dev
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://idearium:idearium_dev@localhost:5432/idearium_test?schema=public
+      JWT_ACCESS_SECRET: ci-secret-not-for-production-use
+      JWT_ACCESS_EXPIRES: 15m
+      JWT_REFRESH_EXPIRES_DAYS: '30'
+      LOG_LEVEL: fatal
+
     steps:
       - uses: actions/checkout@v4
 
@@ -34,3 +56,6 @@ jobs:
 
       - name: Test (unit)
         run: npm run test:api --if-present
+
+      - name: Test (e2e)
+        run: npm run test:e2e -w apps/api
