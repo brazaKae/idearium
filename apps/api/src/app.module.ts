@@ -46,7 +46,14 @@ import { UsersModule } from './users/users.module';
     I18nModule.forRoot({
       fallbackLanguage: 'pt-BR',
       loaderOptions: {
-        path: join(__dirname, 'i18n'),
+        // Em prod/test, __dirname já aponta pro local correto (dist/i18n ou src/i18n).
+        // Em dev (`nest start --watch`), __dirname é dist/, mas dist é deletado/recriado
+        // a cada compilação — o chokidar do nestjs-i18n vê o sumiço e dispara ENOENT.
+        // Solução: ler direto de src/i18n em dev (estável, nunca apaga).
+        path:
+          process.env.NODE_ENV === 'development'
+            ? join(__dirname, '..', 'src', 'i18n')
+            : join(__dirname, 'i18n'),
         watch: process.env.NODE_ENV !== 'production',
       },
       resolvers: [
