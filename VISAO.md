@@ -254,7 +254,7 @@ Caracteres usados como "selo" de cada laboratório:
 Idearium é mantido por duas pessoas desde o início:
 
 - **Kae Brazauskas** — backend, infraestrutura, modelagem de dados, este documento e `ROADMAP_BACKEND.md`.
-- **Gabriele** — frontend, identidade visual, design da home (`mockups/home/index.html`), tom editorial e microcopy.
+- **Gabriele** — frontend, identidade visual, design da home (`brainstorming-design/editorial/baseline.html`), tom editorial e microcopy.
 
 Não usamos o termo *founder* por escolha — soa startup. Aqui somos **co-criadores** e **mantenedores iniciais** de um bem comum digital. As decisões de produto, identidade e governança são tomadas em conjunto.
 
@@ -305,7 +305,7 @@ Estes três pontos não mudam sem refundação do projeto.
   - `ROADMAP_BACKEND.md` — plano operacional do backend
   - `ANALISE_PROJETO.md` — análise estratégica (snapshot do momento do pivô; histórico)
   - `README.md` — apresentação pública (a atualizar conforme o projeto avança)
-  - `mockups/home/index.html` — referência de design da home
+  - `brainstorming-design/editorial/baseline.html` — referência de design da home
 
 ### Próximos passos
 1. **Backend (Kae):** iniciar `ROADMAP_BACKEND.md` Etapa 0 (setup esqueleto).

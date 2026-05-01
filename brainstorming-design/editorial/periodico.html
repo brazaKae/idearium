@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Idearium — Periódico · Edição N.º 1</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;0,6..72,800;1,6..72,400;1,6..72,500;1,6..72,600&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Caveat:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        paper:     '#F2EAD3',  // warmer aged cream
+        paper2:    '#EFE6CC',  // slight tone shift for layering
+        ink:       '#13110E',  // deep printed ink
+        muted:     '#6B6055',
+        dim:       '#A39684',
+        accent:    '#1E3A5F',  // navy
+        gold:      '#A8801F',  // aged gold
+        burgundy:  '#7E2D26',  // rubber stamp red, faded
+        rule:      '#13110E',
+        rulesoft:  '#C9BC9D',
+        coupon:    '#FAF4E0',  // slightly brighter for torn-out feel
+      },
+      fontFamily: {
+        display: ['Newsreader', 'Georgia', 'serif'],
+        serif:   ['Lora', 'Georgia', 'serif'],
+        hand:    ['Caveat', 'cursive'],
+        mono:    ['IBM Plex Mono', 'ui-monospace', 'monospace'],
+      },
+      maxWidth: { 'salon': '1320px' },
+    },
+  },
+};
+</script>
+<style>
+  :root {
+    --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+    --duration-fast: 180ms;
+    --paper-shadow:
+      0 1px 1px rgba(19, 17, 14, 0.04),
+      0 4px 8px rgba(19, 17, 14, 0.06),
+      0 14px 22px -8px rgba(19, 17, 14, 0.10);
+  }
+
+  /* ============ PAPER SUBSTRATE ============
+     SVG noise turbulence applied as background — procedural,
+     ~120 bytes, 4-5% opacity. The grain rides BELOW everything
+     via z-index layering, multiply-blended for warmth. */
+  body {
+    background-color: #F2EAD3;
+    color: #13110E;
+    font-family: 'Lora', Georgia, serif;
+    font-size: 16.5px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    position: relative;
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='4' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.07  0 0 0 0 0.06  0 0 0 0 0.05  0 0 0 0.5 0'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.45'/></svg>");
+    background-size: 220px 220px;
+    mix-blend-mode: multiply;
+    opacity: 0.42;
+  }
+  /* Subtle horizontal "fiber" — long thin streaks like real laid paper */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background:
+      repeating-linear-gradient(
+        90deg,
+        transparent 0,
+        transparent 3px,
+        rgba(124, 105, 75, 0.025) 3px,
+        rgba(124, 105, 75, 0.025) 4px
+      );
+    mix-blend-mode: multiply;
+  }
+
+  /* Everything else floats above the grain */
+  .above { position: relative; z-index: 1; }
+
+  .display { font-family: 'Newsreader', Georgia, serif; }
+  .serif   { font-family: 'Lora', Georgia, serif; }
+  .hand    { font-family: 'Caveat', cursive; }
+  .mono    { font-family: 'IBM Plex Mono', ui-monospace, monospace; }
+
+  /* Optical-size variants for Newsreader — type foundry trick */
+  .opsz-display {
+    font-family: 'Newsreader', serif;
+    font-variation-settings: 'opsz' 72;  /* tightest, for big sizes */
+  }
+  .opsz-text {
+    font-family: 'Newsreader', serif;
+    font-variation-settings: 'opsz' 14;  /* opens up for body */
+  }
+
+  /* ============ MASTHEAD ============ */
+  .folio-rule { border-top: 3px double #13110E; border-bottom: 1px solid #13110E; }
+  .nameplate {
+    font-family: 'Newsreader', Georgia, serif;
+    font-variation-settings: 'opsz' 72;
+    font-weight: 800;
+    font-size: clamp(56px, 11vw, 140px);
+    line-height: 0.88;
+    letter-spacing: -0.035em;
+    color: #13110E;
+    /* layered text-shadow simulates ink bleed into paper fibers */
+    text-shadow:
+      0 0 0.6px rgba(19, 17, 14, 0.4),
+      0 0.4px 0.6px rgba(19, 17, 14, 0.2),
+      -0.3px 0 0.5px rgba(126, 45, 38, 0.15);
+  }
+  .nameplate .ornament {
+    color: #A8801F;
+    font-style: italic;
+    font-weight: 500;
+  }
+
+  /* ============ SECTION LABEL — small caps with hairline ============ */
+  .marker {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #6B6055;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .marker::before {
+    content: "";
+    width: 28px; height: 1px;
+    background: #A8801F;
+  }
+
+  /* ============ PAPER CARDS ============
+     A card = piece of paper sitting on the table.
+     Asymmetric shadow + slight rotation suggests it was placed there. */
+  .paper-card {
+    background: #FFFFFF;
+    box-shadow: var(--paper-shadow);
+    position: relative;
+    z-index: 1;
+  }
+  .paper-card.tilt-l { transform: rotate(-0.4deg); }
+  .paper-card.tilt-r { transform: rotate(0.5deg); }
+
+  /* ============ DECKLED EDGE ============
+     SVG mask on top/bottom — torn paper effect.
+     ~40 bytes per edge, scales perfectly. */
+  .deckle-top {
+    -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'><path d='M0,3 Q3,1 6,2.4 T12,2.8 T18,1.5 T24,3.2 T30,1.8 T36,2.6 T42,1.2 T48,3 T54,1.6 T60,2.8 T66,2 T72,3.4 T78,1.4 T84,2.6 T90,1.8 T96,3 T100,2 L100,100 L0,100 Z' fill='black'/></svg>");
+    mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'><path d='M0,3 Q3,1 6,2.4 T12,2.8 T18,1.5 T24,3.2 T30,1.8 T36,2.6 T42,1.2 T48,3 T54,1.6 T60,2.8 T66,2 T72,3.4 T78,1.4 T84,2.6 T90,1.8 T96,3 T100,2 L100,100 L0,100 Z' fill='black'/></svg>");
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+  }
+  .deckle-bottom {
+    -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'><path d='M0,0 L100,0 L100,97 Q97,99 94,97.6 T88,97.2 T82,98.5 T76,96.8 T70,98.2 T64,97.4 T58,98.8 T52,97 T46,98.4 T40,97.2 T34,98 T28,96.6 T22,98.6 T16,97.4 T10,98.2 T4,97 T0,98 Z' fill='black'/></svg>");
+    mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'><path d='M0,0 L100,0 L100,97 Q97,99 94,97.6 T88,97.2 T82,98.5 T76,96.8 T70,98.2 T64,97.4 T58,98.8 T52,97 T46,98.4 T40,97.2 T34,98 T28,96.6 T22,98.6 T16,97.4 T10,98.2 T4,97 T0,98 Z' fill='black'/></svg>");
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+  }
+
+  /* ============ RUBBER STAMP ============
+     Faded burgundy ink, slight rotation, blur for ink bleed,
+     uppercase letterspaced — the "PUBLISHED" stamp on a document. */
+  .stamp {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #7E2D26;
+    border: 2.5px solid #7E2D26;
+    padding: 6px 14px 5px;
+    border-radius: 2px;
+    /* "ink bleed" — slight blur and irregular opacity */
+    opacity: 0.78;
+    filter: blur(0.25px);
+    mix-blend-mode: multiply;
+    transform: rotate(-3.5deg);
+    transform-origin: center;
+    user-select: none;
+  }
+  .stamp.discussion {
+    color: #6B6055;
+    border-color: #6B6055;
+    transform: rotate(2.2deg);
+  }
+  .stamp.building {
+    color: #1E3A5F;
+    border-color: #1E3A5F;
+    transform: rotate(-2.8deg);
+  }
+
+  /* ============ MARGINALIA ============
+     Handwritten side-notes in Caveat — looks like editor's pen
+     in the margin of a printed page. Slight tilt, accent underline. */
+  .marginalia {
+    font-family: 'Caveat', cursive;
+    font-weight: 500;
+    font-size: 21px;
+    line-height: 1.25;
+    color: #1E3A5F;
+    transform: rotate(-1.2deg);
+    transform-origin: left top;
+  }
+  .marginalia .pen-underline {
+    background-image: linear-gradient(transparent 88%, #A8801F 88%, #A8801F 96%, transparent 96%);
+    background-size: 100% 1.4em;
+    background-repeat: no-repeat;
+    padding: 0 2px;
+  }
+
+  /* ============ DROP CAP ============ */
+  .dropcap::first-letter {
+    font-family: 'Newsreader', Georgia, serif;
+    font-variation-settings: 'opsz' 72;
+    font-weight: 800;
+    float: left;
+    font-size: 4.6em;
+    line-height: 0.82;
+    padding: 8px 12px 0 0;
+    color: #13110E;
+    text-shadow: 0 0 0.5px rgba(19, 17, 14, 0.4);
+  }
+
+  /* ============ HEADLINES ============ */
+  .hl-lead {
+    font-family: 'Newsreader', Georgia, serif;
+    font-variation-settings: 'opsz' 60;
+    font-weight: 700;
+    font-size: clamp(34px, 4vw, 52px);
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+    color: #13110E;
+  }
+  .hl-article {
+    font-family: 'Newsreader', Georgia, serif;
+    font-variation-settings: 'opsz' 36;
+    font-weight: 600;
+    font-size: 26px;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+  }
+  .deck {
+    font-family: 'Newsreader', Georgia, serif;
+    font-variation-settings: 'opsz' 24;
+    font-style: italic;
+    font-weight: 400;
+    color: #2A251D;
+    font-size: 19px;
+    line-height: 1.4;
+  }
+
+  /* ============ BODY TEXT ============ */
+  .body-text {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 16.5px;
+    line-height: 1.62;
+    color: #1A170F;
+  }
+  .byline {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #6B6055;
+  }
+  .byline .author { color: #13110E; font-weight: 500; }
+
+  /* ============ PULL QUOTE ============ */
+  .pullquote {
+    border-left: 3px solid #A8801F;
+    padding: 0 0 0 22px;
+    font-family: 'Newsreader', Georgia, serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 24px;
+    line-height: 1.32;
+    color: #13110E;
+  }
+  .pullquote::before {
+    content: "“";
+    color: #A8801F;
+    font-size: 1.4em;
+    line-height: 0;
+    vertical-align: -0.2em;
+    margin-right: 4px;
+  }
+
+  /* ============ FLEURONS / SECTION BREAKS ============
+     Inline SVG ornaments — ~150 bytes each, infinitely scalable. */
+  .fleuron {
+    display: inline-block;
+    color: #A8801F;
+    line-height: 1;
+  }
+
+  /* ============ LAB STAMPED LIST ============ */
+  .lab-row {
+    display: grid;
+    grid-template-columns: 56px 1fr auto;
+    gap: 18px;
+    padding: 18px 0;
+    border-bottom: 1px dashed #C9BC9D;
+    transition: padding-left var(--duration-fast) var(--ease-out),
+                background-color var(--duration-fast) var(--ease-out);
+  }
+  .lab-row:last-child { border-bottom: 0; }
+  @media (hover: hover) and (pointer: fine) {
+    .lab-row:hover {
+      padding-left: 8px;
+      background-color: rgba(168, 128, 31, 0.04);
+    }
+  }
+  .lab-glyph {
+    font-family: 'Newsreader', serif;
+    font-size: 28px;
+    line-height: 1;
+    color: #7E2D26;
+    /* same "stamp" ink-bleed treatment as status stamps */
+    opacity: 0.82;
+    filter: blur(0.2px);
+    mix-blend-mode: multiply;
+    text-align: center;
+  }
+
+  /* ============ ALMANAC ============ */
+  .ledger {
+    border: 1.5px solid #13110E;
+    background: rgba(255, 255, 255, 0.5);
+    box-shadow: var(--paper-shadow);
+  }
+  .ledger-row {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 18px;
+    padding: 14px 18px;
+    border-bottom: 1px solid #13110E;
+    align-items: baseline;
+  }
+  .ledger-row:last-child { border-bottom: 0; }
+  .ledger-num {
+    font-family: 'Newsreader', serif;
+    font-variation-settings: 'opsz' 60;
+    font-weight: 700;
+    font-size: 38px;
+    line-height: 1;
+    color: #13110E;
+    letter-spacing: -0.02em;
+  }
+  .ledger-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: #6B6055;
+    text-transform: uppercase;
+  }
+
+  /* ============ COUPON CTA ============
+     Torn-out classified — deckled edges + offset shadow + slight tilt.
+     The "$" prompt gets replaced with handwritten feel. */
+  .coupon {
+    background: #FAF4E0;
+    padding: 36px 32px 40px;
+    box-shadow:
+      0 1px 1px rgba(19, 17, 14, 0.04),
+      0 6px 14px rgba(19, 17, 14, 0.10),
+      0 24px 38px -16px rgba(19, 17, 14, 0.16);
+    position: relative;
+    transform: rotate(-0.6deg);
+    transform-origin: center;
+  }
+  .coupon-rim {
+    position: absolute;
+    inset: 6px;
+    border: 1.5px dashed #7E2D26;
+    pointer-events: none;
+  }
+
+  .coupon-input {
+    font-family: 'Caveat', cursive;
+    font-weight: 600;
+    font-size: 26px;
+    line-height: 1;
+    color: #13110E;
+    border-bottom: 1.5px solid #13110E;
+    padding: 8px 4px 10px;
+    transform: rotate(-0.3deg);
+    transform-origin: left;
+  }
+  .caret {
+    display: inline-block;
+    width: 1.5px; height: 0.95em;
+    background: #1E3A5F;
+    vertical-align: middle;
+    margin-left: 3px;
+    animation: blink 1.05s steps(1) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .coupon-btn {
+    display: inline-block;
+    background: #13110E;
+    color: #FAF4E0;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    padding: 12px 22px;
+    border: 1.5px solid #13110E;
+    box-shadow: 3px 3px 0 #A8801F;
+    transition: transform var(--duration-fast) var(--ease-out),
+                box-shadow var(--duration-fast) var(--ease-out);
+  }
+  .coupon-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 #A8801F;
+  }
+
+  /* ============ RFC ARTICLE CARD ============ */
+  .article-card {
+    padding: 36px 32px 28px;
+    background: #FFFFFF;
+    box-shadow: var(--paper-shadow);
+    transition: transform var(--duration-fast) var(--ease-out),
+                box-shadow var(--duration-fast) var(--ease-out);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .article-card:hover {
+      transform: translateY(-2px);
+      box-shadow:
+        0 1px 1px rgba(19, 17, 14, 0.04),
+        0 8px 14px rgba(19, 17, 14, 0.10),
+        0 24px 32px -10px rgba(19, 17, 14, 0.14);
+    }
+    .article-card:hover .read-arrow { transform: translateX(3px); }
+  }
+  .read-arrow {
+    display: inline-block;
+    transition: transform var(--duration-fast) var(--ease-out);
+  }
+
+  /* ============ NAV LINK ============ */
+  .nav-link {
+    transition: color var(--duration-fast) var(--ease-out);
+    position: relative;
+  }
+  .nav-link::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0;
+    bottom: -4px;
+    height: 1px;
+    background: #1E3A5F;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--duration-fast) var(--ease-out);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .nav-link:hover { color: #1E3A5F; }
+    .nav-link:hover::after { transform: scaleX(1); }
+  }
+
+  /* ============ FOCUS ============ */
+  a:focus-visible, button:focus-visible {
+    outline: 2px solid #1E3A5F;
+    outline-offset: 3px;
+  }
+
+  /* ============ REDUCED MOTION ============ */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      transition-duration: 0.01ms !important;
+      animation: none !important;
+    }
+    .caret { opacity: 1; }
+    .stamp, .marginalia, .coupon, .paper-card { transform: none !important; }
+  }
+
+  /* ============ MULTI-COLUMN BODY ============ */
+  @media (min-width: 1024px) {
+    .lead-cols {
+      column-count: 2;
+      column-gap: 36px;
+      column-rule: 1px solid #C9BC9D;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============== INLINE SVG SYMBOL DEFS ==============
+     Reusable fleurons & ornaments. Defined once, instanced via <use>. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- ✺ — six-petal star fleuron -->
+    <symbol id="fleuron-star" viewBox="0 0 24 24">
+      <g fill="currentColor">
+        <path d="M12 2 L13 10 L12 11 L11 10 Z"/>
+        <path d="M12 22 L11 14 L12 13 L13 14 Z"/>
+        <path d="M2 12 L10 11 L11 12 L10 13 Z"/>
+        <path d="M22 12 L14 13 L13 12 L14 11 Z"/>
+        <path d="M5 5 L11 10 L12 11 L10 11 Z"/>
+        <path d="M19 19 L13 14 L12 13 L14 13 Z"/>
+        <path d="M19 5 L14 11 L13 12 L13 10 Z"/>
+        <path d="M5 19 L10 13 L11 12 L11 14 Z"/>
+        <circle cx="12" cy="12" r="1.4"/>
+      </g>
+    </symbol>
+    <!-- §— printer's mark -->
+    <symbol id="fleuron-rule" viewBox="0 0 200 12">
+      <g fill="currentColor">
+        <path d="M0 6 L80 6"/>
+        <circle cx="92" cy="6" r="2"/>
+        <path d="M100 2 L104 6 L100 10 L96 6 Z"/>
+        <circle cx="108" cy="6" r="2"/>
+        <path d="M120 6 L200 6"/>
+      </g>
+      <line x1="0" y1="6" x2="80" y2="6" stroke="currentColor" stroke-width="0.8"/>
+      <line x1="120" y1="6" x2="200" y2="6" stroke="currentColor" stroke-width="0.8"/>
+    </symbol>
+    <!-- end-of-article — pilcrow-like -->
+    <symbol id="fleuron-end" viewBox="0 0 24 24">
+      <g fill="currentColor">
+        <rect x="11" y="4" width="2" height="16"/>
+        <rect x="6" y="11" width="12" height="2"/>
+        <circle cx="12" cy="4" r="2"/>
+        <circle cx="12" cy="20" r="2"/>
+        <circle cx="6" cy="12" r="2"/>
+        <circle cx="18" cy="12" r="2"/>
+      </g>
+    </symbol>
+    <!-- pen nib — for marginalia bullet -->
+    <symbol id="fleuron-nib" viewBox="0 0 24 24">
+      <g fill="currentColor">
+        <path d="M12 2 L18 14 L12 20 L6 14 Z"/>
+        <circle cx="12" cy="14" r="1.2" fill="#F2EAD3"/>
+        <path d="M12 14 L12 22" stroke="currentColor" stroke-width="1.5"/>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- ============== TOP BAR — folio + meta ============== -->
+<div class="above border-b border-rule">
+  <div class="max-w-salon mx-auto px-6 sm:px-10 py-2 flex items-center justify-between byline">
+    <span>Edição N.º 1 · Primavera 2026 · Sexta-feira</span>
+    <span class="hidden sm:flex items-center gap-4">
+      <a href="#" class="hover:text-accent">PT</a>
+      <span class="text-dim">·</span>
+      <a href="#" class="hover:text-accent">EN</a>
+      <span class="text-dim ml-2">·</span>
+      <a href="#" class="hover:text-accent">RSS</a>
+      <a href="#" class="hover:text-accent ml-2">[ entrar ]</a>
+    </span>
+  </div>
+</div>
+
+<!-- ============== MASTHEAD ============== -->
+<header class="above folio-rule">
+  <div class="max-w-salon mx-auto px-6 sm:px-10 py-10 sm:py-14 text-center">
+    <p class="byline mb-4">Periódico de construção coletiva · CC BY-SA 4.0</p>
+    <h1 class="nameplate">Idea<span class="ornament">r</span>ium</h1>
+    <p class="serif italic text-muted text-[16px] mt-5">
+      “não precisa saber fazer. precisa só querer que aconteça.”
+    </p>
+
+    <!-- Decorative rule under masthead -->
+    <div class="flex items-center justify-center gap-4 mt-8">
+      <span class="h-px flex-1 bg-rule max-w-[120px]"></span>
+      <span class="fleuron"><svg width="24" height="24"><use href="#fleuron-star"/></svg></span>
+      <span class="h-px flex-1 bg-rule max-w-[120px]"></span>
+    </div>
+  </div>
+
+  <!-- Bottom nav -->
+  <div class="border-t border-rule">
+    <nav class="max-w-salon mx-auto px-6 sm:px-10 flex flex-wrap items-center justify-center gap-x-10 gap-y-3 py-3 text-[14px] serif">
+      <a href="#" class="nav-link">Átrio</a>
+      <a href="#" class="nav-link">Laboratórios</a>
+      <a href="#" class="nav-link">Ideias</a>
+      <a href="#" class="nav-link">Builders</a>
+      <a href="#" class="nav-link">Governança</a>
+      <a href="#" class="nav-link">Sobre</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ============== MAIN ============== -->
+<main class="above max-w-salon mx-auto px-6 sm:px-10 py-14">
+
+  <!-- ===== LEAD STORY ===== -->
+  <section class="grid lg:grid-cols-[minmax(0,1fr)_320px] gap-12 lg:gap-16 pb-16 border-b border-rule">
+
+    <article class="paper-card tilt-l p-10 deckle-top">
+      <p class="marker mb-5">Em destaque · Lab. Educação</p>
+
+      <p class="mono text-[12px] text-gold tracking-[0.08em] mb-3">RFC-0007</p>
+      <h2 class="hl-lead">Biblioteca Cooperativa de Bairro</h2>
+      <p class="deck mt-5 max-w-[60ch]">
+        Catálogo leve para vizinhos emprestarem livros entre si — registro
+        simples de posse, devolução e reputação baseada em confiança.
+      </p>
+
+      <div class="flex items-center gap-4 mt-6 flex-wrap">
+        <p class="byline">
+          <span class="author">por @luisa</span> · São Paulo · 15 abr 2026 · 8 builders inscritos
+        </p>
+        <span class="stamp building">em construção</span>
+      </div>
+
+      <div class="mt-8 lead-cols body-text dropcap">
+        Há três anos a ideia mora numa professora de bairro do extremo leste
+        de São Paulo. Não tinha rede pra propor; agora tem. A proposta nasce
+        simples: um catálogo digital onde vizinhos catalogam livros que toparia
+        emprestar, anotam quando saíram e quando voltaram, e constroem
+        reputação sem intermediário comercial. Não é uma startup. Não é um
+        app de aluguel. É infraestrutura cívica pequena, à escala de uma rua,
+        replicável de bairro em bairro. Os primeiros oito builders já discutem
+        escopo no fórum: três querem cuidar do front, dois do backend mínimo,
+        e três do desenho da confiança — quem responde quando o livro não
+        volta? A resposta não é técnica. É comunitária, e a RFC propõe o
+        vocabulário pra ter essa conversa em público.
+      </div>
+
+      <div class="pullquote mt-10 max-w-[44ch]">
+        Não pretende escalar pra milhões. Pretende existir bem em algumas centenas de quadras.
+      </div>
+
+      <p class="byline mt-10">
+        <a href="#" class="text-accent hover:underline">[ ler RFC-0007 na íntegra <span class="read-arrow">→</span> ]</a>
+      </p>
+
+      <!-- end-of-article ornament -->
+      <div class="flex justify-center mt-10">
+        <span class="fleuron text-gold"><svg width="20" height="20"><use href="#fleuron-end"/></svg></span>
+      </div>
+    </article>
+
+    <!-- Sidebar: ledger + marginalia -->
+    <aside>
+      <div class="ledger">
+        <div class="ledger-row">
+          <span class="ledger-num">47</span>
+          <span class="ledger-label">ideias em curso</span>
+        </div>
+        <div class="ledger-row">
+          <span class="ledger-num">128</span>
+          <span class="ledger-label">builders registrados</span>
+        </div>
+        <div class="ledger-row">
+          <span class="ledger-num">06</span>
+          <span class="ledger-label">laboratórios abertos</span>
+        </div>
+        <div class="ledger-row">
+          <span class="ledger-num">03</span>
+          <span class="ledger-label">RFCs publicadas no mês</span>
+        </div>
+      </div>
+
+      <p class="byline text-center mt-3">— atualizado de hora em hora —</p>
+
+      <!-- Marginalia handwritten note -->
+      <div class="mt-12 pl-3">
+        <p class="marginalia">
+          <span class="pen-underline">três das seis</span> têm builder novo<br>
+          esta semana — <span class="pen-underline">bom sinal</span>.
+        </p>
+        <p class="hand text-muted text-[16px] mt-3 ml-auto pr-2 text-right" style="transform: rotate(2deg);">
+          — k.
+        </p>
+      </div>
+    </aside>
+
+  </section>
+
+  <!-- ===== SUB-ARTICLES ===== -->
+  <section class="pt-16 grid lg:grid-cols-2 gap-10 pb-16 border-b border-rule">
+
+    <article class="article-card paper-card tilt-r">
+      <p class="marker mb-4">Lab. Cidades</p>
+      <p class="mono text-[12px] text-gold tracking-[0.08em] mb-2">RFC-0011</p>
+      <h3 class="hl-article">Rastreamento Anônimo de Enchentes Urbanas</h3>
+
+      <div class="flex items-center gap-3 mt-4 mb-5">
+        <p class="byline"><span class="author">@rafael</span> · Recife · 13 abr · 5 inscritos</p>
+        <span class="stamp discussion">em discussão</span>
+      </div>
+
+      <p class="body-text">
+        Canal colaborativo de relatos geolocalizados sobre alagamentos,
+        agregando ocorrências em tempo quase-real como dado público.
+        Não pede cadastro, não rastreia o relator. O escopo aberto à
+        discussão é como mediar falsos positivos sem virar moderação
+        pesada — e quem hospeda os dados em jurisdição amigável.
+      </p>
+
+      <p class="byline mt-5">
+        <a href="#" class="text-accent hover:underline">[ continuar lendo <span class="read-arrow">→</span> ]</a>
+      </p>
+    </article>
+
+    <article class="article-card paper-card tilt-l">
+      <p class="marker mb-4">Lab. Saúde</p>
+      <p class="mono text-[12px] text-gold tracking-[0.08em] mb-2">RFC-0014</p>
+      <h3 class="hl-article">Farmácia Solidária por Geolocalização</h3>
+
+      <div class="flex items-center gap-3 mt-4 mb-5">
+        <p class="byline"><span class="author">@marina</span> · Salvador · hoje · 11 inscritos</p>
+        <span class="stamp building">em construção</span>
+      </div>
+
+      <p class="body-text">
+        Rede de pontos comunitários onde pessoas doam medicamentos
+        fechados e dentro da validade. Busca por proximidade, moderação
+        local. A ideia veio de dentro: a autora atua há anos na farmácia
+        solidária do bairro e conhece por dentro o problema — onde a
+        gestão hoje falha sem infraestrutura digital mínima.
+      </p>
+
+      <p class="byline mt-5">
+        <a href="#" class="text-accent hover:underline">[ continuar lendo <span class="read-arrow">→</span> ]</a>
+      </p>
+    </article>
+
+  </section>
+
+  <!-- ===== INDEX SECTION ===== -->
+  <section class="pt-16 grid lg:grid-cols-3 gap-12 pb-16 border-b border-rule">
+
+    <!-- Lab index — stamped glyphs -->
+    <div>
+      <p class="marker mb-6">Índice de laboratórios</p>
+      <ul>
+        <li>
+          <a href="#" class="lab-row">
+            <span class="lab-glyph">◈</span>
+            <span>
+              <span class="display font-semibold text-ink text-[19px] block leading-tight">Lab. Educação</span>
+              <span class="byline mt-0.5 inline-block">12 ideias · 34 builders</span>
+            </span>
+            <span class="serif italic text-muted text-[14px] self-center">três ativas</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" class="lab-row">
+            <span class="lab-glyph">◇</span>
+            <span>
+              <span class="display font-semibold text-ink text-[19px] block leading-tight">Lab. Cidades</span>
+              <span class="byline mt-0.5 inline-block">9 ideias · 22 builders</span>
+            </span>
+            <span class="serif italic text-muted text-[14px] self-center">duas ativas</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" class="lab-row">
+            <span class="lab-glyph">✚</span>
+            <span>
+              <span class="display font-semibold text-ink text-[19px] block leading-tight">Lab. Saúde</span>
+              <span class="byline mt-0.5 inline-block">7 ideias · 18 builders</span>
+            </span>
+            <span class="serif italic text-muted text-[14px] self-center">duas ativas</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" class="lab-row">
+            <span class="lab-glyph">♪</span>
+            <span>
+              <span class="display font-semibold text-ink text-[19px] block leading-tight">Lab. Cultura</span>
+              <span class="byline mt-0.5 inline-block">6 ideias · 14 builders</span>
+            </span>
+            <span class="serif italic text-muted text-[14px] self-center">uma ativa</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" class="lab-row">
+            <span class="lab-glyph">⌘</span>
+            <span>
+              <span class="display font-semibold text-ink text-[19px] block leading-tight">Lab. Tec. Cívica</span>
+              <span class="byline mt-0.5 inline-block">8 ideias · 26 builders</span>
+            </span>
+            <span class="serif italic text-muted text-[14px] self-center">três ativas</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" class="lab-row">
+            <span class="lab-glyph">◆</span>
+            <span>
+              <span class="display font-semibold text-ink text-[19px] block leading-tight">Lab. Econ. Solidária</span>
+              <span class="byline mt-0.5 inline-block">5 ideias · 14 builders</span>
+            </span>
+            <span class="serif italic text-muted text-[14px] self-center">uma ativa</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Builders — classified ads -->
+    <div>
+      <p class="marker mb-6">Procuram-se causas</p>
+      <p class="serif italic text-muted text-[15px] mb-6 leading-snug max-w-[36ch]">
+        Builders abertos a colaborar esta semana.
+      </p>
+
+      <div class="space-y-5">
+        <div class="border-b border-rulesoft pb-4">
+          <p class="display font-semibold text-ink text-[18px]">@mari.fe</p>
+          <p class="serif italic text-muted text-[14.5px] mt-1">front + ilustração — procura projeto de cultura</p>
+        </div>
+        <div class="border-b border-rulesoft pb-4">
+          <p class="display font-semibold text-ink text-[18px]">@jhonatan</p>
+          <p class="serif italic text-muted text-[14.5px] mt-1">data + infra — interesse em cidades e saúde</p>
+        </div>
+        <div class="border-b border-rulesoft pb-4">
+          <p class="display font-semibold text-ink text-[18px]">@lu.design</p>
+          <p class="serif italic text-muted text-[14.5px] mt-1">produto + UX — disponível para MVP curto</p>
+        </div>
+        <div>
+          <p class="display font-semibold text-ink text-[18px]">@dev.raposa</p>
+          <p class="serif italic text-muted text-[14.5px] mt-1">backend + devops — gravita para tec. cívica</p>
+        </div>
+      </div>
+
+      <p class="byline mt-6">
+        <a href="#" class="text-accent hover:underline">[ ver todos os 128 builders <span class="read-arrow">→</span> ]</a>
+      </p>
+    </div>
+
+    <!-- CTA — torn coupon -->
+    <div>
+      <div class="coupon">
+        <span class="coupon-rim"></span>
+        <p class="byline text-center mb-3">— Classificados · grátis —</p>
+        <h3 class="display italic font-semibold text-ink text-[26px] leading-tight text-center">
+          Tem uma ideia<br>na cabeça?
+        </h3>
+
+        <div class="text-center my-5">
+          <span class="fleuron text-gold"><svg width="22" height="22"><use href="#fleuron-star"/></svg></span>
+        </div>
+
+        <p class="byline mb-2">Rascunho · só você vê</p>
+        <p class="coupon-input">e se a gente<span class="caret"></span></p>
+
+        <div class="text-center mt-7">
+          <a href="#" class="coupon-btn">[ começar a escrever ]</a>
+        </div>
+
+        <p class="byline text-center mt-5 leading-relaxed">
+          ~3 min · ninguém lê até você publicar
+        </p>
+
+        <!-- Tiny editor's pen note -->
+        <p class="hand text-burgundy text-[18px] mt-5 text-center" style="transform: rotate(-1.5deg);">
+          recorte e guarde
+        </p>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ===== CICLO ===== -->
+  <section class="pt-16">
+    <div class="text-center mb-10">
+      <p class="marker justify-center inline-flex">O ciclo de uma ideia</p>
+    </div>
+
+    <div class="grid sm:grid-cols-3 gap-12 sm:divide-x sm:divide-rulesoft">
+      <div class="sm:pr-8 text-center sm:text-left">
+        <p class="display italic font-bold text-burgundy text-[64px] leading-none opacity-80" style="filter: blur(0.3px); mix-blend-mode: multiply;">I.</p>
+        <h4 class="display font-semibold text-ink text-[22px] mt-4">Proponha</h4>
+        <p class="serif text-muted text-[15.5px] mt-3 leading-relaxed">
+          Escreva uma RFC curta. Abre automaticamente para discussão pública.
+        </p>
+      </div>
+      <div class="sm:px-8 text-center sm:text-left">
+        <p class="display italic font-bold text-burgundy text-[64px] leading-none opacity-80" style="filter: blur(0.3px); mix-blend-mode: multiply;">II.</p>
+        <h4 class="display font-semibold text-ink text-[22px] mt-4">Reúna</h4>
+        <p class="serif text-muted text-[15.5px] mt-3 leading-relaxed">
+          Pessoas se inscrevem para construir. Escopo é co-definido, sem hierarquia.
+        </p>
+      </div>
+      <div class="sm:pl-8 text-center sm:text-left">
+        <p class="display italic font-bold text-burgundy text-[64px] leading-none opacity-80" style="filter: blur(0.3px); mix-blend-mode: multiply;">III.</p>
+        <h4 class="display font-semibold text-ink text-[22px] mt-4">Construa em aberto</h4>
+        <p class="serif text-muted text-[15.5px] mt-3 leading-relaxed">
+          Implementação pública. Crédito compartilhado. Histórico permanente.
+        </p>
+      </div>
+    </div>
+
+    <!-- Section break ornament -->
+    <div class="flex justify-center mt-16 text-gold">
+      <svg width="200" height="12"><use href="#fleuron-rule"/></svg>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============== COLOPHON FOOTER ============== -->
+<footer class="above border-t-2 border-double border-rule mt-12">
+  <div class="max-w-salon mx-auto px-6 sm:px-10 py-14 grid lg:grid-cols-12 gap-12">
+
+    <div class="lg:col-span-5">
+      <p class="display font-bold italic text-ink text-[36px] leading-none">Idearium</p>
+      <p class="serif italic text-muted text-[16px] mt-4 max-w-[44ch] leading-relaxed">
+        Periódico de construção coletiva, mantido por voluntários e
+        apoiadores. Sem dono, sem anúncio, sem cobrança. Pra existir bem
+        por muito tempo.
+      </p>
+
+      <!-- Colophon — printer's note -->
+      <div class="mt-8 border-t border-rulesoft pt-5">
+        <p class="byline">Colophon</p>
+        <p class="serif text-[13.5px] text-muted mt-2 leading-relaxed max-w-[42ch]">
+          Tipografia: <em>Newsreader</em> (Production Type), <em>Lora</em>
+          (Cyreal), <em>IBM Plex Mono</em> (IBM Brand Center), <em>Caveat</em>
+          (Pablo Impallari). Composto digitalmente em pt-BR.
+        </p>
+      </div>
+    </div>
+
+    <nav class="lg:col-span-2">
+      <p class="marker mb-4">Comunidade</p>
+      <ul class="space-y-2.5 serif text-[15px]">
+        <li><a href="#" class="hover:text-accent">Código de conduta</a></li>
+        <li><a href="#" class="hover:text-accent">Governança</a></li>
+        <li><a href="#" class="hover:text-accent">Participantes</a></li>
+        <li><a href="#" class="hover:text-accent">Transparência</a></li>
+      </ul>
+    </nav>
+
+    <nav class="lg:col-span-2">
+      <p class="marker mb-4">Acompanhe</p>
+      <ul class="space-y-2.5 serif text-[15px]">
+        <li><a href="#" class="hover:text-accent">GitHub</a></li>
+        <li><a href="#" class="hover:text-accent">RSS</a></li>
+        <li><a href="#" class="hover:text-accent">Newsletter</a></li>
+      </ul>
+    </nav>
+
+    <div class="lg:col-span-3">
+      <p class="marker mb-4">Próxima edição</p>
+      <p class="display italic font-semibold text-ink text-[28px] leading-tight">Junho de 2026.</p>
+      <p class="serif italic text-muted text-[14.5px] mt-3 leading-relaxed">
+        — sem pressa de prensa. <span class="hand text-burgundy text-[18px] inline-block ml-1" style="transform: rotate(-3deg);">só quando estiver bom.</span>
+      </p>
+    </div>
+
+  </div>
+
+  <div class="border-t border-rulesoft">
+    <div class="max-w-salon mx-auto px-6 sm:px-10 py-4 flex flex-wrap items-center gap-3 justify-between byline">
+      <span>CC BY-SA 4.0 · AGPL-3.0 (código)</span>
+      <span class="flex items-center gap-3">
+        <span>v0.2 · idearium.community</span>
+        <span class="text-gold"><svg width="14" height="14"><use href="#fleuron-end"/></svg></span>
+      </span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

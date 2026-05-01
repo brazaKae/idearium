@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Idearium · Logo "i" — extração</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"></script>
+
+<style>
+  body {
+    margin: 0;
+    background: #FFF7E0;
+    color: #0A0A0A;
+    font-family: 'Pixelify Sans', monospace;
+    image-rendering: pixelated;
+    padding: 40px 24px 80px;
+  }
+  .wrap { max-width: 1100px; margin: 0 auto; }
+
+  h1 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: #5A544D;
+    margin: 0 0 8px;
+    font-weight: 500;
+  }
+  .lede {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: #5A544D;
+    line-height: 1.55;
+    max-width: 60ch;
+    margin: 0 0 50px;
+  }
+
+  .section {
+    border: 2px solid #0A0A0A;
+    background: #FFFFFF;
+    box-shadow: 4px 4px 0 #0A0A0A;
+    padding: 0;
+    margin-bottom: 40px;
+  }
+  .section-title {
+    background: #0A0A0A;
+    color: #FFF7E0;
+    padding: 6px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .section-body { padding: 36px 32px; }
+
+  .variants-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 0;
+    border-top: 2px solid #0A0A0A;
+  }
+  .variant {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 16px;
+    padding: 36px 24px;
+    border-right: 2px solid #0A0A0A;
+  }
+  .variant:last-child { border-right: 0; }
+  .variant-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    color: rgba(0,0,0,0.4);
+    text-transform: uppercase;
+  }
+
+  .reductions {
+    display: flex;
+    align-items: flex-end;
+    gap: 36px;
+    flex-wrap: wrap;
+  }
+  .reduction {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .reduction-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: #5A544D;
+  }
+
+  .construction-grid {
+    display: inline-block;
+    border: 1px dashed #5A544D;
+    padding: 8px;
+    background: #FAF4E0;
+  }
+  .construction-grid svg { display: block; }
+
+  .palette-row {
+    display: flex;
+    gap: 0;
+    border: 2px solid #0A0A0A;
+    margin-top: 12px;
+  }
+  .palette-swatch {
+    flex: 1;
+    height: 60px;
+    display: flex;
+    align-items: end;
+    padding: 6px 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+  }
+
+  .footer-note {
+    margin-top: 60px;
+    padding-top: 24px;
+    border-top: 1px solid #5A544D;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #5A544D;
+    line-height: 1.7;
+  }
+  code { background: #F5F2EB; padding: 2px 6px; font-size: 0.92em; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>idearium · extração do logo "i"</h1>
+  <p class="lede">
+    Reconstrução do logo a partir da folha <code>18_07_23.png</code> como
+    componente React + grids binários 13×13. Mesmo padrão dos ícones em
+    <code>kare-os-icons.jsx</code>. Cores, escala e variações configuráveis
+    via props.
+  </p>
+
+  <div id="root"></div>
+
+  <div class="footer-note">
+    <p><strong>Sobre os 17 ícones da faixa de baixo da sua folha:</strong></p>
+    <ul style="line-height: 1.8;">
+      <li>Os 17 ícones (floppy, mac, bomb, doc, folder, trash, brain, clock,
+        stamp, envelope, feather, city, scale, book, flag, hand, apple) já
+        estão em <code>kare-os-icons.jsx</code> como grids binários 13×13 —
+        os originais Susan Kare</li>
+      <li>Olhando sua folha, os ícones na sua versão <strong>parecem ser os
+        mesmos</strong> (mesmo grid, mesma silhueta) — a "redesignação" foi
+        mais a apresentação na folha do que pixels diferentes</li>
+      <li>Se você redesenhou algum ícone específico, me passa esse ícone em
+        alta resolução (ou descreve quais cells mudaram em qual grid 13×13)
+        que eu atualizo o array binário</li>
+    </ul>
+  </div>
+
+</div>
+
+<script type="text/babel" src="kare-os-logo.jsx"></script>
+
+<script type="text/babel">
+function App() {
+  return (
+    <div>
+
+      {/* ===== HERO — main logo ===== */}
+      <div className="section">
+        <div className="section-title">Logo principal</div>
+        <div className="section-body" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 40 }}>
+          <IdeariumLockup scale={8} wordmarkSize={56} gap={20} />
+          <IdeariumTagline size={12} language="en" />
+        </div>
+      </div>
+
+      {/* ===== VARIATIONS — backgrounds ===== */}
+      <div className="section">
+        <div className="section-title">Variações de fundo</div>
+        <div className="variants-grid">
+
+          <div className="variant" style={{ background: '#3B82E0' }}>
+            <IdeariumLockup
+              scale={5}
+              wordmarkSize={36}
+              dotColor="#FFD43B"
+              bodyColor="#FFF7E0"
+              textColor="#FFF7E0"
+              gap={14}
+            />
+            <span className="variant-label" style={{ color: 'rgba(255,255,255,0.6)' }}>cobalto · cream</span>
+          </div>
+
+          <div className="variant" style={{ background: '#FFF7E0' }}>
+            <IdeariumLockup scale={5} wordmarkSize={36} gap={14} />
+            <span className="variant-label">cream · cobalto</span>
+          </div>
+
+          <div className="variant" style={{ background: '#0A0A0A' }}>
+            <IdeariumLockup
+              scale={5}
+              wordmarkSize={36}
+              dotColor="#FFD43B"
+              bodyColor="#FFF7E0"
+              textColor="#FFF7E0"
+              gap={14}
+            />
+            <span className="variant-label" style={{ color: 'rgba(255,255,255,0.6)' }}>ink · cream</span>
+          </div>
+
+        </div>
+      </div>
+
+      {/* ===== JUST THE MARK — without wordmark ===== */}
+      <div className="section">
+        <div className="section-title">Logo isolado (sem wordmark)</div>
+        <div className="section-body">
+          <div className="variants-grid" style={{ borderTop: 'none' }}>
+            <div className="variant" style={{ background: '#3B82E0', border: 'none' }}>
+              <IdeariumLogo scale={8} dotColor="#FFD43B" bodyColor="#FFF7E0" />
+              <span className="variant-label" style={{ color: 'rgba(255,255,255,0.6)' }}>variante cobalto</span>
+            </div>
+            <div className="variant" style={{ background: '#FFF7E0', border: 'none' }}>
+              <IdeariumLogo scale={8} />
+              <span className="variant-label">variante cream (default)</span>
+            </div>
+            <div className="variant" style={{ background: '#0A0A0A', border: 'none' }}>
+              <IdeariumLogo scale={8} dotColor="#FFD43B" bodyColor="#FFF7E0" />
+              <span className="variant-label" style={{ color: 'rgba(255,255,255,0.6)' }}>variante dark</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ===== REDUCTIONS — sizes ===== */}
+      <div className="section">
+        <div className="section-title">Reduções (favicon, app icon, badge)</div>
+        <div className="section-body">
+          <div className="reductions">
+            <div className="reduction">
+              <IdeariumLogo scale={1} />
+              <span className="reduction-label">13px (favicon)</span>
+            </div>
+            <div className="reduction">
+              <IdeariumLogo scale={2} />
+              <span className="reduction-label">26px</span>
+            </div>
+            <div className="reduction">
+              <IdeariumLogo scale={3} />
+              <span className="reduction-label">39px (toolbar)</span>
+            </div>
+            <div className="reduction">
+              <IdeariumLogo scale={4} />
+              <span className="reduction-label">52px</span>
+            </div>
+            <div className="reduction">
+              <IdeariumLogo scale={6} />
+              <span className="reduction-label">78px (header)</span>
+            </div>
+            <div className="reduction">
+              <IdeariumLogo scale={10} />
+              <span className="reduction-label">130px (hero)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ===== CONSTRUCTION — grid showing pixels ===== */}
+      <div className="section">
+        <div className="section-title">Construção em grade 13×13</div>
+        <div className="section-body" style={{ display: 'flex', gap: 60, alignItems: 'center', flexWrap: 'wrap' }}>
+          <div className="construction-grid">
+            <IdeariumLogo scale={20} />
+          </div>
+          <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12, lineHeight: 1.7, color: '#0A0A0A' }}>
+            <p style={{ margin: '0 0 12px', fontWeight: 600 }}>Anatomia:</p>
+            <ul style={{ margin: 0, paddingLeft: 20 }}>
+              <li><strong>Dot</strong> — 4 rows × 5 cols (centralizado)</li>
+              <li><strong>Gap</strong> — 1 row vazia</li>
+              <li><strong>Stem</strong> — 5 rows × 3 cols (com flanges nas pontas)</li>
+              <li><strong>Base</strong> — 3 rows em pirâmide invertida (7→9→11 cols)</li>
+            </ul>
+            <p style={{ margin: '14px 0 0', color: '#5A544D' }}>
+              Total: grade 13×13. Renderiza como 169 cells SVG no máximo,
+              mas só desenha as ~50 cells preenchidas. ~600 bytes de SVG
+              em qualquer tamanho.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* ===== PALETTE ===== */}
+      <div className="section">
+        <div className="section-title">Paleta de cores do logo</div>
+        <div className="section-body">
+          <div className="palette-row">
+            <div className="palette-swatch" style={{ background: '#FFD43B', color: '#0A0A0A' }}>#FFD43B<br/>dot</div>
+            <div className="palette-swatch" style={{ background: '#3B82E0', color: '#FFFFFF' }}>#3B82E0<br/>body (cobalto)</div>
+            <div className="palette-swatch" style={{ background: '#FFF7E0', color: '#0A0A0A' }}>#FFF7E0<br/>cream / paper</div>
+            <div className="palette-swatch" style={{ background: '#0A0A0A', color: '#FFF7E0' }}>#0A0A0A<br/>ink</div>
+          </div>
+        </div>
+      </div>
+
+      {/* ===== USAGE EXAMPLES ===== */}
+      <div className="section">
+        <div className="section-title">Usos em contexto</div>
+        <div className="section-body" style={{ display: 'flex', gap: 40, flexWrap: 'wrap' }}>
+
+          {/* In a window title bar */}
+          <div style={{ border: '2px solid #0A0A0A', background: '#FFF7E0', boxShadow: '4px 4px 0 #0A0A0A', minWidth: 280 }}>
+            <div style={{
+              height: 22,
+              background: '#FFF7E0',
+              borderBottom: '2px solid #0A0A0A',
+              backgroundImage: 'repeating-linear-gradient(0deg, #0A0A0A 0px, #0A0A0A 1px, transparent 1px, transparent 4px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#FFF7E0', padding: '1px 10px', fontSize: 12, fontWeight: 700, fontFamily: 'Pixelify Sans, monospace' }}>
+                <IdeariumLogo scale={2} />
+                <span>idearium · sobre</span>
+              </div>
+            </div>
+            <div style={{ padding: 24, textAlign: 'center' }}>
+              <IdeariumLogo scale={5} />
+              <p style={{ fontFamily: 'Pixelify Sans, monospace', fontSize: 14, fontWeight: 700, marginTop: 14, marginBottom: 4 }}>idearium</p>
+              <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: '#5A544D', margin: 0 }}>System 4.7 · build 2026.05</p>
+            </div>
+          </div>
+
+          {/* As favicon mock */}
+          <div style={{ border: '2px solid #0A0A0A', background: '#3B82E0', padding: 18, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+            <div style={{ background: '#0A0A0A', padding: '4px 8px', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <IdeariumLogo scale={1} dotColor="#FFD43B" bodyColor="#FFF7E0" />
+              <span style={{ color: '#FFF7E0', fontSize: 10, fontFamily: 'JetBrains Mono, monospace' }}>idearium.community</span>
+            </div>
+            <span style={{ color: '#FFF7E0', fontFamily: 'JetBrains Mono, monospace', fontSize: 10, opacity: 0.7 }}>browser tab simulation</span>
+          </div>
+
+          {/* As menu bar logo */}
+          <div style={{ border: '2px solid #0A0A0A', background: '#FFF7E0', minWidth: 320 }}>
+            <div style={{
+              height: 22,
+              padding: '0 10px',
+              borderBottom: '2px solid #0A0A0A',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 14,
+              fontFamily: 'Pixelify Sans, monospace',
+              fontSize: 13,
+            }}>
+              <IdeariumLogo scale={1.5} />
+              <span style={{ fontWeight: 700 }}>Idearium</span>
+              <span>Arquivo</span>
+              <span>Editar</span>
+              <span>Lab</span>
+              <span>RFC</span>
+            </div>
+            <div style={{ padding: 14 }}>
+              <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: '#5A544D' }}>logo na menu bar do desktop</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+
+</body>
+</html>

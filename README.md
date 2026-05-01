@@ -18,7 +18,7 @@ idearium/
 ├── apps/
 │   ├── api/         # backend NestJS (Kae)
 │   └── web/         # frontend (Gabriele)
-├── mockups/         # mockups e referências de design
+├── brainstorming-design/         # mockups e referências de design
 ├── docker-compose.yml
 ├── VISAO.md         # SSOT do projeto
 └── ROADMAP_BACKEND.md

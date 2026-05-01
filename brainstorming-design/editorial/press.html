@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Idearium — Edição N.º 1 (Press)</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;0,6..72,800;1,6..72,400;1,6..72,500&family=Public+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        bg:      '#F8F4EA',
+        card:    '#FFFFFF',
+        panel:   '#EFE8D6',
+        ink:     '#0E0E0D',
+        muted:   '#5A544D',
+        accent:  '#1A2E4F',
+        gold:    '#A8801F',
+        rule:    '#1C1B19',
+        rulesoft:'#D9D2BE',
+      },
+      fontFamily: {
+        serif: ['Newsreader', 'Georgia', 'serif'],
+        sans:  ['Public Sans', 'system-ui', 'sans-serif'],
+        mono:  ['IBM Plex Mono', 'ui-monospace', 'monospace'],
+      },
+      maxWidth: { 'salon': '1380px' },
+    },
+  },
+};
+</script>
+<style>
+  :root {
+    --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+    --duration-fast: 160ms;
+  }
+  body {
+    background-color: #F8F4EA;
+    color: #0E0E0D;
+    font-family: 'Public Sans', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  .serif { font-family: 'Newsreader', Georgia, serif; }
+  .mono  { font-family: 'IBM Plex Mono', ui-monospace, monospace; }
+
+  /* Masthead */
+  .masthead-title {
+    font-family: 'Newsreader', Georgia, serif;
+    font-weight: 800;
+    font-style: normal;
+    font-size: clamp(54px, 9vw, 110px);
+    line-height: 0.92;
+    letter-spacing: -0.025em;
+    color: #0E0E0D;
+  }
+  .masthead-rule-top { border-top: 4px solid #1C1B19; }
+  .masthead-rule-bot { border-top: 1px solid #1C1B19; }
+  .masthead-rule-mid { border-top: 1px solid #1C1B19; }
+
+  /* Section labels */
+  .section-label {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #5A544D;
+  }
+  .section-label .bullet {
+    display: inline-block;
+    width: 6px; height: 6px;
+    background: #A8801F;
+    margin-right: 8px;
+    transform: translateY(-1px);
+  }
+
+  /* Headlines */
+  .hl-lead {
+    font-family: 'Newsreader', Georgia, serif;
+    font-weight: 700;
+    font-size: clamp(28px, 3.4vw, 42px);
+    line-height: 1.05;
+    letter-spacing: -0.018em;
+  }
+  .hl-article {
+    font-family: 'Newsreader', Georgia, serif;
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 1.18;
+    letter-spacing: -0.01em;
+  }
+  .deck {
+    font-family: 'Newsreader', Georgia, serif;
+    font-style: italic;
+    font-weight: 400;
+    color: #2C2A26;
+    font-size: 18px;
+    line-height: 1.45;
+  }
+
+  /* Drop cap — only on lead article */
+  .dropcap::first-letter {
+    font-family: 'Newsreader', Georgia, serif;
+    font-weight: 800;
+    float: left;
+    font-size: 4.2em;
+    line-height: 0.85;
+    padding: 6px 10px 0 0;
+    color: #0E0E0D;
+  }
+
+  /* Body text — newspaper feel */
+  .body-text {
+    font-family: 'Newsreader', Georgia, serif;
+    font-size: 16.5px;
+    line-height: 1.55;
+    color: #1C1B19;
+  }
+
+  /* Byline / dateline */
+  .byline {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #5A544D;
+  }
+  .byline .author { color: #0E0E0D; font-weight: 500; }
+
+  /* Rule between articles */
+  .article-rule {
+    border-bottom: 1px solid #1C1B19;
+  }
+  .article-rule-soft { border-bottom: 1px dashed #ABA593; }
+
+  /* Pull quote */
+  .pullquote {
+    border-left: 3px solid #A8801F;
+    padding-left: 18px;
+    font-family: 'Newsreader', Georgia, serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 22px;
+    line-height: 1.32;
+    color: #0E0E0D;
+  }
+
+  /* RFC badge — like an article tag */
+  .rfc-badge {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: #A8801F;
+    font-weight: 500;
+  }
+
+  /* Lab list — newspaper index column */
+  .index-item {
+    border-bottom: 1px dashed #ABA593;
+    padding: 11px 0;
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+  .index-item:last-child { border-bottom: 0; }
+  @media (hover: hover) and (pointer: fine) {
+    .index-item:hover .index-name { color: #1A2E4F; }
+    .index-item:hover .index-glyph { color: #1A2E4F; }
+  }
+  .index-glyph {
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  /* CTA — column ad style */
+  .cta-classifieds {
+    border: 1px solid #1C1B19;
+    background: #FFFFFF;
+    position: relative;
+  }
+  .cta-classifieds::before {
+    content: "";
+    position: absolute;
+    top: -1px; left: -1px; right: -1px;
+    height: 6px;
+    background: repeating-linear-gradient(
+      90deg,
+      #1C1B19 0, #1C1B19 8px,
+      transparent 8px, transparent 14px
+    );
+  }
+  .cta-classifieds::after {
+    content: "";
+    position: absolute;
+    bottom: -1px; left: -1px; right: -1px;
+    height: 6px;
+    background: repeating-linear-gradient(
+      90deg,
+      #1C1B19 0, #1C1B19 8px,
+      transparent 8px, transparent 14px
+    );
+  }
+  .cta-headline {
+    font-family: 'Newsreader', Georgia, serif;
+    font-weight: 700;
+    font-style: italic;
+    font-size: 26px;
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+  }
+  .cta-btn {
+    display: inline-block;
+    background: #0E0E0D;
+    color: #F8F4EA;
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 12px 22px;
+    transition: transform var(--duration-fast) var(--ease-out);
+  }
+  .cta-btn:active { transform: scale(0.97); }
+
+  /* Builders mini-list */
+  .builder-row {
+    border-bottom: 1px dashed #ABA593;
+    padding: 8px 0;
+  }
+  .builder-row:last-child { border-bottom: 0; }
+
+  /* Stats — almanac feel */
+  .almanac-num {
+    font-family: 'Newsreader', Georgia, serif;
+    font-weight: 700;
+    font-size: 36px;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .almanac-label {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #5A544D;
+  }
+
+  /* Status — small caps newspaper labels */
+  .status-tag {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #A8801F;
+  }
+  .status-tag.discussion { color: #5A544D; }
+  .status-tag.building { color: #1A2E4F; }
+
+  /* Focus */
+  a:focus-visible, button:focus-visible {
+    outline: 2px solid #1A2E4F;
+    outline-offset: 2px;
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+    }
+  }
+
+  /* Multi-column for the lead spread on lg+ */
+  @media (min-width: 1024px) {
+    .lead-body-cols {
+      column-count: 2;
+      column-gap: 36px;
+      column-rule: 1px solid #ABA593;
+    }
+  }
+</style>
+</head>
+<body class="min-h-screen">
+
+<!-- ============== MASTHEAD ============== -->
+<header class="masthead-rule-top">
+  <div class="max-w-salon mx-auto px-6 sm:px-10">
+
+    <!-- Top meta strip -->
+    <div class="flex items-center justify-between py-2 border-b border-rulesoft">
+      <p class="byline">Edição N.º 1 · Primavera 2026 · Sexta-feira</p>
+      <div class="flex items-center gap-5">
+        <a href="#" class="byline hover:text-accent">PT</a>
+        <span class="byline text-rulesoft">·</span>
+        <a href="#" class="byline hover:text-accent">EN</a>
+        <a href="#" class="byline hover:text-accent ml-3">RSS</a>
+        <a href="#" class="byline hover:text-accent">[ entrar ]</a>
+      </div>
+    </div>
+
+    <!-- Masthead title -->
+    <div class="text-center py-7 sm:py-10">
+      <p class="byline mb-3">Periódico de construção coletiva</p>
+      <h1 class="masthead-title">IDEARIUM</h1>
+      <p class="serif italic text-muted text-[16px] mt-4">
+        “não precisa saber fazer. precisa só querer que aconteça.”
+      </p>
+    </div>
+
+    <!-- Bottom nav + index strip -->
+    <div class="masthead-rule-bot">
+      <nav class="flex flex-wrap items-center justify-center gap-x-10 gap-y-3 py-4 text-[14px] sans">
+        <a href="#" class="hover:text-accent">Átrio</a>
+        <a href="#" class="hover:text-accent">Laboratórios</a>
+        <a href="#" class="hover:text-accent">Ideias</a>
+        <a href="#" class="hover:text-accent">Builders</a>
+        <a href="#" class="hover:text-accent">Governança</a>
+        <a href="#" class="hover:text-accent">Sobre</a>
+      </nav>
+    </div>
+
+  </div>
+</header>
+
+<!-- ============== ABOVE-THE-FOLD STRIP ============== -->
+<div class="border-b border-rule">
+  <div class="max-w-salon mx-auto px-6 sm:px-10 py-3 grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
+    <p class="byline">📰 não — sem emoji. Vol. I · No. 1 · idearium.community</p>
+    <p class="serif italic text-muted text-[15px] text-center">
+      Ideias abertas, builders voluntários, crédito compartilhado.
+    </p>
+    <p class="byline text-right">CC BY-SA 4.0 · Domínio público em espírito</p>
+  </div>
+</div>
+
+<!-- ============== MAIN ============== -->
+<main class="max-w-salon mx-auto px-6 sm:px-10 py-12">
+
+  <!-- ===== LEAD STORY ===== -->
+  <section class="grid lg:grid-cols-[minmax(0,1fr)_320px] gap-10 lg:gap-14 pb-12 article-rule">
+
+    <article>
+      <p class="section-label mb-4"><span class="bullet"></span>Em destaque · Lab. Educação</p>
+      <p class="rfc-badge mb-3">RFC-0007</p>
+      <h2 class="hl-lead">Biblioteca Cooperativa de Bairro</h2>
+      <p class="deck mt-4 max-w-[60ch]">
+        Catálogo leve para vizinhos emprestarem livros entre si — registro simples
+        de posse, devolução e reputação baseada em confiança comunitária.
+      </p>
+
+      <p class="byline mt-5">
+        <span class="author">por @luisa</span> · São Paulo · 15 abr 2026 · 8 builders inscritos · <span class="status-tag building">em construção</span>
+      </p>
+
+      <div class="mt-7 lead-body-cols body-text dropcap">
+        Há três anos a ideia mora numa professora de bairro do extremo leste de
+        São Paulo. Não tinha rede pra propor; agora tem. A proposta nasce simples:
+        um catálogo digital onde vizinhos catalogam livros que toparia emprestar,
+        anotam quando saíram e quando voltaram, e constroem reputação sem
+        intermediário comercial. Não é uma startup. Não é um app de aluguel. É
+        infraestrutura cívica pequena, à escala de uma rua, replicável de bairro
+        em bairro. Os primeiros oito builders já discutem escopo no fórum: três
+        querem cuidar do front, dois do backend mínimo, e três do desenho da
+        confiança — quem responde quando o livro não volta? A resposta não é
+        técnica. É comunitária, e a RFC propõe o vocabulário pra ter essa
+        conversa em público.
+      </div>
+
+      <div class="pullquote mt-8 max-w-[44ch]">
+        Não pretende escalar pra milhões. Pretende existir bem em algumas centenas de quadras.
+      </div>
+
+      <p class="byline mt-8">
+        <a href="#" class="text-accent hover:underline">[ ler RFC-0007 na íntegra → ]</a>
+      </p>
+    </article>
+
+    <!-- ===== ALMANAQUE / SIDEBAR ===== -->
+    <aside>
+      <div class="border border-rule p-6 bg-card">
+        <p class="section-label mb-5"><span class="bullet"></span>Almanaque</p>
+
+        <div>
+          <p class="almanac-num">47</p>
+          <p class="almanac-label mt-1">ideias em curso</p>
+        </div>
+        <div class="mt-5 pt-5 border-t border-rulesoft">
+          <p class="almanac-num">128</p>
+          <p class="almanac-label mt-1">builders registrados</p>
+        </div>
+        <div class="mt-5 pt-5 border-t border-rulesoft">
+          <p class="almanac-num">6</p>
+          <p class="almanac-label mt-1">laboratórios abertos</p>
+        </div>
+        <div class="mt-5 pt-5 border-t border-rulesoft">
+          <p class="almanac-num">3</p>
+          <p class="almanac-label mt-1">RFCs publicadas este mês</p>
+        </div>
+      </div>
+
+      <p class="byline text-center mt-3">— atualizado de hora em hora —</p>
+    </aside>
+
+  </section>
+
+  <!-- ===== SEGUNDA SEÇÃO: MAIS DUAS REPORTAGENS ===== -->
+  <section class="pt-12 grid lg:grid-cols-2 gap-12 lg:divide-x lg:divide-[#1C1B19] article-rule pb-12">
+
+    <article class="lg:pr-12">
+      <p class="section-label mb-4"><span class="bullet"></span>Lab. Cidades</p>
+      <p class="rfc-badge mb-3">RFC-0011</p>
+      <h3 class="hl-article">Rastreamento Anônimo de Enchentes Urbanas</h3>
+      <p class="byline mt-3">
+        <span class="author">por @rafael</span> · Recife · 13 abr 2026 · 5 inscritos · <span class="status-tag discussion">em discussão</span>
+      </p>
+      <p class="body-text mt-4">
+        Canal colaborativo de relatos geolocalizados sobre alagamentos, agregando
+        ocorrências em tempo quase-real como dado público. Não pede cadastro,
+        não rastreia o relator. O escopo aberto à discussão é como mediar
+        falsos positivos sem virar moderação pesada — e quem hospeda os dados
+        em jurisdição amigável.
+      </p>
+      <p class="byline mt-4">
+        <a href="#" class="text-accent hover:underline">[ continuar lendo → ]</a>
+      </p>
+    </article>
+
+    <article class="lg:pl-12">
+      <p class="section-label mb-4"><span class="bullet"></span>Lab. Saúde</p>
+      <p class="rfc-badge mb-3">RFC-0014</p>
+      <h3 class="hl-article">Farmácia Solidária por Geolocalização</h3>
+      <p class="byline mt-3">
+        <span class="author">por @marina</span> · Salvador · hoje · 11 inscritos · <span class="status-tag building">em construção</span>
+      </p>
+      <p class="body-text mt-4">
+        Rede de pontos comunitários onde pessoas doam medicamentos fechados e
+        dentro da validade. Busca por proximidade, moderação local. A ideia
+        veio de dentro: a autora atua há anos na farmácia solidária do bairro
+        e conhece por dentro o problema — onde a gestão hoje falha sem
+        infraestrutura digital mínima.
+      </p>
+      <p class="byline mt-4">
+        <a href="#" class="text-accent hover:underline">[ continuar lendo → ]</a>
+      </p>
+    </article>
+
+  </section>
+
+  <!-- ===== INDEX: LABORATÓRIOS + BUILDERS ===== -->
+  <section class="pt-12 grid lg:grid-cols-3 gap-12">
+
+    <!-- Lab index -->
+    <div class="lg:col-span-1">
+      <p class="section-label mb-5"><span class="bullet"></span>Índice de laboratórios</p>
+      <ul>
+        <li class="index-item flex items-baseline justify-between">
+          <a href="#" class="block w-full">
+            <div class="flex items-baseline gap-3">
+              <span class="index-glyph serif text-[20px] text-gold">◈</span>
+              <span class="index-name serif font-semibold text-ink text-[18px]">Lab. Educação</span>
+            </div>
+            <p class="byline mt-1 pl-8">12 ideias · 34 builders</p>
+          </a>
+        </li>
+        <li class="index-item">
+          <a href="#" class="block w-full">
+            <div class="flex items-baseline gap-3">
+              <span class="index-glyph serif text-[20px] text-gold">◇</span>
+              <span class="index-name serif font-semibold text-ink text-[18px]">Lab. Cidades</span>
+            </div>
+            <p class="byline mt-1 pl-8">9 ideias · 22 builders</p>
+          </a>
+        </li>
+        <li class="index-item">
+          <a href="#" class="block w-full">
+            <div class="flex items-baseline gap-3">
+              <span class="index-glyph serif text-[20px] text-gold">✚</span>
+              <span class="index-name serif font-semibold text-ink text-[18px]">Lab. Saúde</span>
+            </div>
+            <p class="byline mt-1 pl-8">7 ideias · 18 builders</p>
+          </a>
+        </li>
+        <li class="index-item">
+          <a href="#" class="block w-full">
+            <div class="flex items-baseline gap-3">
+              <span class="index-glyph serif text-[20px] text-gold">♪</span>
+              <span class="index-name serif font-semibold text-ink text-[18px]">Lab. Cultura</span>
+            </div>
+            <p class="byline mt-1 pl-8">6 ideias · 14 builders</p>
+          </a>
+        </li>
+        <li class="index-item">
+          <a href="#" class="block w-full">
+            <div class="flex items-baseline gap-3">
+              <span class="index-glyph serif text-[20px] text-gold">⌘</span>
+              <span class="index-name serif font-semibold text-ink text-[18px]">Lab. Tec. Cívica</span>
+            </div>
+            <p class="byline mt-1 pl-8">8 ideias · 26 builders</p>
+          </a>
+        </li>
+        <li class="index-item">
+          <a href="#" class="block w-full">
+            <div class="flex items-baseline gap-3">
+              <span class="index-glyph serif text-[20px] text-gold">◆</span>
+              <span class="index-name serif font-semibold text-ink text-[18px]">Lab. Econ. Solidária</span>
+            </div>
+            <p class="byline mt-1 pl-8">5 ideias · 14 builders</p>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Builders -->
+    <div class="lg:col-span-1">
+      <p class="section-label mb-5"><span class="bullet"></span>Procuram-se causas</p>
+      <p class="serif italic text-muted text-[15px] mb-5 leading-snug">
+        Quatro builders abertos à colaboração esta semana. Procurem por causa, não por currículo.
+      </p>
+
+      <div class="builder-row">
+        <p class="serif font-semibold text-ink text-[16px]"><span class="mono text-[13px] text-muted">@</span>mari.fe</p>
+        <p class="serif text-muted text-[14px] mt-0.5">front + ilustração — procura projeto de cultura</p>
+      </div>
+      <div class="builder-row">
+        <p class="serif font-semibold text-ink text-[16px]"><span class="mono text-[13px] text-muted">@</span>jhonatan</p>
+        <p class="serif text-muted text-[14px] mt-0.5">data + infra — interesse em cidades e saúde</p>
+      </div>
+      <div class="builder-row">
+        <p class="serif font-semibold text-ink text-[16px]"><span class="mono text-[13px] text-muted">@</span>lu.design</p>
+        <p class="serif text-muted text-[14px] mt-0.5">produto + UX — disponível pra MVP curto</p>
+      </div>
+      <div class="builder-row">
+        <p class="serif font-semibold text-ink text-[16px]"><span class="mono text-[13px] text-muted">@</span>dev.raposa</p>
+        <p class="serif text-muted text-[14px] mt-0.5">backend + devops — gravita pra tec. cívica</p>
+      </div>
+
+      <p class="byline mt-5">
+        <a href="#" class="text-accent hover:underline">[ ver todos os 128 builders → ]</a>
+      </p>
+    </div>
+
+    <!-- CTA — classified ad style -->
+    <div class="lg:col-span-1">
+      <div class="cta-classifieds p-8">
+        <p class="section-label text-center mb-4">— Classificados —</p>
+        <h3 class="cta-headline text-center">Tem uma ideia<br>na cabeça?</h3>
+        <p class="serif italic text-muted text-[15px] text-center mt-4 leading-relaxed">
+          Escreva-a aqui. Em três minutos vira RFC. Ninguém lê até você publicar.
+        </p>
+
+        <div class="border-t border-b border-rule my-6 py-3">
+          <p class="byline mb-2">Rascunho · só você vê</p>
+          <p class="serif italic text-muted text-[16px]">e se a gente <span class="inline-block w-px h-[1.05em] bg-ink align-middle animate-pulse"></span></p>
+        </div>
+
+        <div class="text-center">
+          <a href="#" class="cta-btn">[ começar a escrever ]</a>
+        </div>
+
+        <p class="byline text-center mt-5 leading-relaxed">
+          Sem fila de aprovação. Sem mediação. Sem cobrança — agora ou nunca.
+        </p>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ===== COMO FUNCIONA — strip horizontal ===== -->
+  <section class="mt-16 pt-10 article-rule">
+    <p class="section-label mb-6"><span class="bullet"></span>O ciclo de uma ideia</p>
+    <div class="grid sm:grid-cols-3 gap-10 sm:divide-x sm:divide-rulesoft">
+      <div class="sm:pr-8">
+        <p class="serif font-bold text-gold text-[28px] leading-none">I.</p>
+        <h4 class="serif font-semibold text-ink text-[18px] mt-3">Proponha</h4>
+        <p class="serif text-muted text-[15px] mt-2 leading-snug">
+          Escreva uma RFC curta. Abre automaticamente para discussão pública.
+        </p>
+      </div>
+      <div class="sm:px-8">
+        <p class="serif font-bold text-gold text-[28px] leading-none">II.</p>
+        <h4 class="serif font-semibold text-ink text-[18px] mt-3">Reúna</h4>
+        <p class="serif text-muted text-[15px] mt-2 leading-snug">
+          Pessoas se inscrevem para construir. Escopo é co-definido, sem hierarquia.
+        </p>
+      </div>
+      <div class="sm:pl-8">
+        <p class="serif font-bold text-gold text-[28px] leading-none">III.</p>
+        <h4 class="serif font-semibold text-ink text-[18px] mt-3">Construa em aberto</h4>
+        <p class="serif text-muted text-[15px] mt-2 leading-snug">
+          Implementação pública. Crédito compartilhado. Histórico permanente.
+        </p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============== FOOTER ============== -->
+<footer class="border-t-2 border-rule mt-16">
+  <div class="max-w-salon mx-auto px-6 sm:px-10 py-12 grid sm:grid-cols-4 gap-10">
+
+    <div class="sm:col-span-2">
+      <p class="serif font-bold text-ink text-[28px] leading-none">Idearium</p>
+      <p class="serif italic text-muted text-[16px] mt-3 max-w-[40ch] leading-relaxed">
+        Periódico de construção coletiva. Mantido por voluntários e apoiadores.
+        Sem dono, sem anúncio, sem cobrança. Pra existir bem por muito tempo.
+      </p>
+      <p class="byline mt-5">CC BY-SA 4.0 · Conteúdo em Creative Commons Atribuição-CompartilhaIgual</p>
+    </div>
+
+    <nav>
+      <p class="section-label mb-4">Comunidade</p>
+      <ul class="space-y-2 serif text-[15px]">
+        <li><a href="#" class="hover:text-accent">Código de conduta</a></li>
+        <li><a href="#" class="hover:text-accent">Governança</a></li>
+        <li><a href="#" class="hover:text-accent">Participantes</a></li>
+        <li><a href="#" class="hover:text-accent">Transparência</a></li>
+      </ul>
+    </nav>
+
+    <nav>
+      <p class="section-label mb-4">Acompanhe</p>
+      <ul class="space-y-2 serif text-[15px]">
+        <li><a href="#" class="hover:text-accent">GitHub</a></li>
+        <li><a href="#" class="hover:text-accent">RSS</a></li>
+        <li><a href="#" class="hover:text-accent">Newsletter mensal</a></li>
+      </ul>
+    </nav>
+
+  </div>
+
+  <div class="border-t border-rulesoft">
+    <div class="max-w-salon mx-auto px-6 sm:px-10 py-4 flex flex-wrap items-center gap-3 justify-between">
+      <p class="byline">v0.2 · idearium.community / átrio</p>
+      <p class="byline">— próxima edição em junho de 2026 —</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

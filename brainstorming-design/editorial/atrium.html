@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Idearium — Átrio</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        bg:     '#FAFAF7',
+        ink:    '#1C1C1B',
+        muted:  '#6B6560',
+        dim:    '#9A958E',
+        accent: '#1E3A5F',
+        gold:   '#C8A04A',
+        rule:   '#1C1C1B',
+        soft:   '#E5E2DB',
+      },
+      fontFamily: {
+        display: ['Cormorant Garamond', 'serif'],
+        serif:   ['Lora', 'Georgia', 'serif'],
+        sans:    ['Inter', 'system-ui', 'sans-serif'],
+        mono:    ['IBM Plex Mono', 'ui-monospace', 'monospace'],
+      },
+      maxWidth: { 'salon': '1320px' },
+    },
+  },
+};
+</script>
+<style>
+  :root {
+    --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+    --duration-fast: 200ms;
+    --gutter: 96px;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    background: #FAFAF7;
+    color: #1C1C1B;
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  .display { font-family: 'Cormorant Garamond', serif; }
+  .serif   { font-family: 'Lora', Georgia, serif; }
+  .mono    { font-family: 'IBM Plex Mono', ui-monospace, monospace; }
+
+  /* Vertical structural rules — like print magazine columns */
+  .col-rule-l { border-left: 1px solid #1C1C1B; }
+  .col-rule-r { border-right: 1px solid #1C1C1B; }
+
+  /* Section markers — small caps mono with hairline */
+  .marker {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #6B6560;
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .marker::before {
+    content: "";
+    width: 36px; height: 1px; background: #C8A04A;
+  }
+
+  /* Header — minimal */
+  .head-wrap {
+    border-bottom: 1px solid #1C1C1B;
+  }
+  .nav-link {
+    position: relative;
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .nav-link:hover { color: #1E3A5F; }
+  }
+
+  /* Hero — display serif, italic, generous */
+  .hero-display {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 500;
+    font-style: italic;
+    font-size: clamp(48px, 8vw, 110px);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    color: #1C1C1B;
+  }
+  .hero-display .amp {
+    color: #C8A04A;
+    font-style: italic;
+  }
+
+  /* Lede — generous serif body */
+  .lede {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 19px;
+    line-height: 1.7;
+    color: #2C2A26;
+  }
+
+  /* Marginalia — sidenotes (Tufte-inspired) */
+  .marginalia {
+    font-family: 'Lora', Georgia, serif;
+    font-style: italic;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: #6B6560;
+    border-left: 1px solid #C8A04A;
+    padding-left: 16px;
+  }
+
+  /* Ornament dingbat */
+  .ornament {
+    color: #C8A04A;
+    font-size: 16px;
+    line-height: 1;
+    font-family: 'Lora', Georgia, serif;
+  }
+
+  /* RFC entries — generous, no boxes */
+  .rfc-entry {
+    padding-top: 56px;
+    padding-bottom: 56px;
+    border-bottom: 1px solid #1C1C1B;
+    transition: background-color var(--duration-fast) var(--ease-out);
+  }
+  .rfc-entry:first-child { border-top: 1px solid #1C1C1B; }
+  .rfc-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 56px;
+    line-height: 1;
+    color: #C8A04A;
+    letter-spacing: -0.02em;
+  }
+  .rfc-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 500;
+    font-size: clamp(28px, 3vw, 38px);
+    line-height: 1.08;
+    letter-spacing: -0.01em;
+    color: #1C1C1B;
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+  .rfc-summary {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 17px;
+    line-height: 1.65;
+    color: #2C2A26;
+  }
+  .rfc-meta {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: #6B6560;
+    text-transform: uppercase;
+  }
+  .rfc-meta .author { color: #1C1C1B; font-weight: 500; }
+  @media (hover: hover) and (pointer: fine) {
+    .rfc-entry:hover .rfc-title { color: #1E3A5F; }
+    .rfc-entry:hover .rfc-arrow { transform: translateX(3px); }
+  }
+  .rfc-arrow {
+    display: inline-block;
+    transition: transform var(--duration-fast) var(--ease-out);
+  }
+
+  /* Status — italic mono badge */
+  .status {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 16px;
+    color: #6B6560;
+    border-bottom: 1px solid #C8A04A;
+    padding-bottom: 1px;
+  }
+  .status.building { color: #1E3A5F; }
+  .status.discussion { color: #6B6560; }
+
+  /* Lab list — vertical, chiseled */
+  .lab-row {
+    display: grid;
+    grid-template-columns: 60px 1fr auto;
+    gap: 16px;
+    padding: 18px 0;
+    border-bottom: 1px solid #E5E2DB;
+    transition: padding-left var(--duration-fast) var(--ease-out);
+  }
+  .lab-row:last-child { border-bottom: 0; }
+  @media (hover: hover) and (pointer: fine) {
+    .lab-row:hover { padding-left: 8px; }
+    .lab-row:hover .lab-glyph { color: #C8A04A; }
+    .lab-row:hover .lab-name { color: #1E3A5F; }
+  }
+  .lab-glyph {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 28px;
+    color: #6B6560;
+    transition: color var(--duration-fast) var(--ease-out);
+    line-height: 1;
+  }
+  .lab-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 500;
+    font-size: 24px;
+    line-height: 1.1;
+    color: #1C1C1B;
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+  .lab-stat {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 11px;
+    color: #6B6560;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* CTA — cathedral pillar */
+  .cta-pillar {
+    background: transparent;
+    border-left: 1px solid #C8A04A;
+    border-right: 1px solid #C8A04A;
+    padding: 64px 48px;
+    position: relative;
+  }
+  .cta-pillar::before, .cta-pillar::after {
+    content: "";
+    position: absolute;
+    left: -8px; right: -8px;
+    height: 1px; background: #1C1C1B;
+  }
+  .cta-pillar::before { top: 0; }
+  .cta-pillar::after { bottom: 0; }
+
+  .cta-quote {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(28px, 3vw, 38px);
+    line-height: 1.1;
+    color: #1C1C1B;
+    letter-spacing: -0.01em;
+  }
+
+  .cta-input {
+    font-family: 'Lora', Georgia, serif;
+    font-style: italic;
+    font-size: 18px;
+    color: #6B6560;
+    border-bottom: 1px solid #1C1C1B;
+    padding-bottom: 12px;
+  }
+  .caret {
+    display: inline-block;
+    width: 1px; height: 1em;
+    background: #1E3A5F;
+    margin-left: 3px;
+    vertical-align: text-bottom;
+    animation: blink 1.05s steps(1) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .cta-btn {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #1C1C1B;
+    border-bottom: 1px solid #1C1C1B;
+    padding-bottom: 6px;
+    transition: color var(--duration-fast) var(--ease-out),
+                border-color var(--duration-fast) var(--ease-out),
+                transform var(--duration-fast) var(--ease-out);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .cta-btn:hover { color: #1E3A5F; border-color: #1E3A5F; }
+  }
+  .cta-btn:active { transform: scale(0.98); }
+
+  /* Almanac — large numbers */
+  .almanac {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 72px;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    color: #1C1C1B;
+  }
+  .almanac-label {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    color: #6B6560;
+    text-transform: uppercase;
+  }
+
+  /* Builders */
+  .builder-card {
+    padding: 18px 0;
+    border-bottom: 1px solid #E5E2DB;
+  }
+  .builder-card:last-child { border-bottom: 0; }
+  .builder-handle {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 13px;
+    color: #1C1C1B;
+  }
+  .builder-bio {
+    font-family: 'Lora', Georgia, serif;
+    font-style: italic;
+    font-size: 14px;
+    color: #6B6560;
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+
+  /* Ciclo — Roman numerals */
+  .roman {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 88px;
+    line-height: 0.85;
+    color: #C8A04A;
+    letter-spacing: -0.02em;
+  }
+
+  /* Ornamental section break */
+  .breaker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    margin: 80px 0;
+  }
+  .breaker::before, .breaker::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: #E5E2DB;
+  }
+  .breaker .glyph {
+    color: #C8A04A;
+    font-family: 'Lora', Georgia, serif;
+    font-size: 18px;
+  }
+
+  /* Focus */
+  a:focus-visible, button:focus-visible {
+    outline: 1px solid #1E3A5F;
+    outline-offset: 4px;
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      transition-duration: 0.01ms !important;
+      animation: none !important;
+      scroll-behavior: auto !important;
+    }
+    .caret { opacity: 1; }
+  }
+</style>
+</head>
+<body class="min-h-screen">
+
+<!-- ============== HEADER ============== -->
+<header class="head-wrap">
+  <div class="max-w-salon mx-auto px-8 lg:px-16 py-6 flex items-center gap-12">
+    <a href="#" class="flex items-baseline gap-3">
+      <span class="display italic font-medium text-ink text-[26px] tracking-tight">Idearium</span>
+      <span class="hidden sm:inline mono text-[10px] uppercase tracking-[0.22em] text-muted">Community Labs</span>
+    </a>
+
+    <nav class="hidden md:flex items-center gap-8 ml-8 text-[14px] text-ink">
+      <a class="nav-link serif" href="#">Átrio</a>
+      <a class="nav-link serif" href="#">Laboratórios</a>
+      <a class="nav-link serif" href="#">Ideias</a>
+      <a class="nav-link serif" href="#">Builders</a>
+      <a class="nav-link serif" href="#">Sobre</a>
+    </nav>
+
+    <div class="ml-auto flex items-center gap-6">
+      <a href="#" class="mono text-[11px] uppercase tracking-[0.18em] text-muted hover:text-accent">PT · EN</a>
+      <a href="#" class="cta-btn">Entrar</a>
+    </div>
+  </div>
+</header>
+
+<!-- ============== HERO ============== -->
+<section class="max-w-salon mx-auto px-8 lg:px-16 pt-24 lg:pt-36 pb-24 lg:pb-32">
+  <div class="grid lg:grid-cols-12 gap-x-12">
+
+    <!-- offset to col 2 — asymmetric on purpose -->
+    <div class="lg:col-start-2 lg:col-span-8">
+      <p class="marker mb-10">Átrio · primavera de 2026</p>
+      <h1 class="hero-display">
+        Comunidade de<br>
+        construção <span class="amp">&amp;</span><br>
+        crédito coletivo.
+      </h1>
+    </div>
+
+    <div class="lg:col-start-6 lg:col-span-6 mt-10 lg:mt-16">
+      <p class="lede max-w-[54ch]">
+        Idearium reúne ideias abertas e voluntários em laboratórios temáticos.
+        Aqui ideias com potencial de impacto social viram propostas estruturadas
+        — RFCs — e atraem quem quer co-construí-las em público.
+      </p>
+      <p class="mono text-[12px] uppercase tracking-[0.18em] text-muted mt-8">
+        “não precisa saber fazer. precisa só querer que aconteça.”
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============== ALMANAC STRIP ============== -->
+<section class="border-t border-b border-rule">
+  <div class="max-w-salon mx-auto px-8 lg:px-16 py-12 grid grid-cols-2 lg:grid-cols-4 gap-8 lg:divide-x lg:divide-soft">
+    <div class="lg:px-8">
+      <p class="almanac">47</p>
+      <p class="almanac-label mt-3">ideias em curso</p>
+    </div>
+    <div class="lg:px-8">
+      <p class="almanac">128</p>
+      <p class="almanac-label mt-3">builders</p>
+    </div>
+    <div class="lg:px-8">
+      <p class="almanac">06</p>
+      <p class="almanac-label mt-3">laboratórios</p>
+    </div>
+    <div class="lg:px-8">
+      <p class="almanac">03</p>
+      <p class="almanac-label mt-3">RFCs este mês</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============== EM DESTAQUE — RFC list ============== -->
+<section class="max-w-salon mx-auto px-8 lg:px-16 pt-32 pb-16">
+  <div class="grid lg:grid-cols-12 gap-x-12 mb-16">
+    <div class="lg:col-start-2 lg:col-span-6">
+      <p class="marker mb-6">Em destaque</p>
+      <h2 class="display italic font-medium text-ink text-[44px] lg:text-[56px] leading-[1.05] tracking-tight">
+        Três propostas abertas<br>à colaboração.
+      </h2>
+    </div>
+    <div class="lg:col-start-9 lg:col-span-4 lg:pt-12">
+      <p class="marginalia">
+        Ordenação por movimento recente — não por algoritmo de engajamento.
+        Para o catálogo completo, ver <a href="#" class="text-accent underline underline-offset-4 decoration-soft hover:decoration-accent">/rfcs</a>.
+      </p>
+    </div>
+  </div>
+
+  <div class="lg:grid lg:grid-cols-12 gap-x-12">
+    <div class="lg:col-start-2 lg:col-span-10">
+
+      <!-- RFC 1 -->
+      <a href="#" class="rfc-entry block">
+        <div class="grid lg:grid-cols-[120px_1fr_140px] gap-8 lg:items-start">
+          <div>
+            <p class="rfc-num">07</p>
+            <p class="mono text-[10px] tracking-[0.14em] text-dim mt-3">RFC-0007</p>
+          </div>
+          <div>
+            <p class="mono text-[11px] uppercase tracking-[0.14em] text-muted mb-2">Lab. Educação</p>
+            <h3 class="rfc-title">Biblioteca Cooperativa de Bairro</h3>
+            <p class="rfc-summary mt-4 max-w-[60ch]">
+              Catálogo leve para vizinhos emprestarem livros entre si — registro
+              simples de posse, devolução e reputação baseada em confiança.
+            </p>
+            <p class="rfc-meta mt-5">
+              <span class="author">@luisa</span> · 8 builders · há 2 dias
+              · <span class="text-accent">ler RFC <span class="rfc-arrow">→</span></span>
+            </p>
+          </div>
+          <div class="lg:text-right">
+            <span class="status building">em construção</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- RFC 2 -->
+      <a href="#" class="rfc-entry block">
+        <div class="grid lg:grid-cols-[120px_1fr_140px] gap-8 lg:items-start">
+          <div>
+            <p class="rfc-num">11</p>
+            <p class="mono text-[10px] tracking-[0.14em] text-dim mt-3">RFC-0011</p>
+          </div>
+          <div>
+            <p class="mono text-[11px] uppercase tracking-[0.14em] text-muted mb-2">Lab. Cidades</p>
+            <h3 class="rfc-title">Rastreamento Anônimo de Enchentes Urbanas</h3>
+            <p class="rfc-summary mt-4 max-w-[60ch]">
+              Canal colaborativo de relatos geolocalizados sobre alagamentos,
+              que agrega ocorrências em tempo quase-real como dado aberto,
+              preservando anonimato.
+            </p>
+            <p class="rfc-meta mt-5">
+              <span class="author">@rafael</span> · 5 builders · há 4 dias
+              · <span class="text-accent">ler RFC <span class="rfc-arrow">→</span></span>
+            </p>
+          </div>
+          <div class="lg:text-right">
+            <span class="status discussion">em discussão</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- RFC 3 -->
+      <a href="#" class="rfc-entry block">
+        <div class="grid lg:grid-cols-[120px_1fr_140px] gap-8 lg:items-start">
+          <div>
+            <p class="rfc-num">14</p>
+            <p class="mono text-[10px] tracking-[0.14em] text-dim mt-3">RFC-0014</p>
+          </div>
+          <div>
+            <p class="mono text-[11px] uppercase tracking-[0.14em] text-muted mb-2">Lab. Saúde</p>
+            <h3 class="rfc-title">Farmácia Solidária por Geolocalização</h3>
+            <p class="rfc-summary mt-4 max-w-[60ch]">
+              Rede de pontos comunitários onde pessoas doam medicamentos
+              fechados e dentro da validade, com busca por proximidade e
+              moderação local.
+            </p>
+            <p class="rfc-meta mt-5">
+              <span class="author">@marina</span> · 11 builders · hoje
+              · <span class="text-accent">ler RFC <span class="rfc-arrow">→</span></span>
+            </p>
+          </div>
+          <div class="lg:text-right">
+            <span class="status building">em construção</span>
+          </div>
+        </div>
+      </a>
+
+      <p class="rfc-meta mt-8 text-center">
+        <a href="#" class="hover:text-accent">— ver todas as 47 ideias —</a>
+      </p>
+
+    </div>
+  </div>
+</section>
+
+<div class="max-w-salon mx-auto px-8 lg:px-16">
+  <div class="breaker"><span class="glyph">✺</span></div>
+</div>
+
+<!-- ============== LABS ============== -->
+<section class="max-w-salon mx-auto px-8 lg:px-16 pb-24">
+  <div class="grid lg:grid-cols-12 gap-x-12">
+    <div class="lg:col-start-2 lg:col-span-3">
+      <p class="marker mb-6">Laboratórios</p>
+      <p class="display italic font-medium text-ink text-[36px] leading-[1.05] tracking-tight">
+        Recortes<br>temáticos.
+      </p>
+      <p class="marginalia mt-6">
+        Não são silos. Uma RFC pertence a um lab, mas a mesma pessoa transita
+        entre todos.
+      </p>
+    </div>
+
+    <div class="lg:col-start-6 lg:col-span-7">
+      <ul>
+        <li>
+          <a href="#" class="lab-row block">
+            <span class="lab-glyph">◈</span>
+            <span><span class="lab-name block">Lab. Educação</span></span>
+            <span class="lab-stat self-center">12 ideias · 34 builders</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" class="lab-row block">
+            <span class="lab-glyph">◇</span>
+            <span><span class="lab-name block">Lab. Cidades</span></span>
+            <span class="lab-stat self-center">9 ideias · 22 builders</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" class="lab-row block">
+            <span class="lab-glyph">✚</span>
+            <span><span class="lab-name block">Lab. Saúde</span></span>
+            <span class="lab-stat self-center">7 ideias · 18 builders</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" class="lab-row block">
+            <span class="lab-glyph">♪</span>
+            <span><span class="lab-name block">Lab. Cultura</span></span>
+            <span class="lab-stat self-center">6 ideias · 14 builders</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" class="lab-row block">
+            <span class="lab-glyph">⌘</span>
+            <span><span class="lab-name block">Lab. Tec. Cívica</span></span>
+            <span class="lab-stat self-center">8 ideias · 26 builders</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" class="lab-row block">
+            <span class="lab-glyph">◆</span>
+            <span><span class="lab-name block">Lab. Econ. Solidária</span></span>
+            <span class="lab-stat self-center">5 ideias · 14 builders</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============== CTA + BUILDERS ============== -->
+<section class="max-w-salon mx-auto px-8 lg:px-16 pb-32">
+  <div class="grid lg:grid-cols-12 gap-x-12 lg:gap-x-16">
+
+    <!-- CTA — pillar -->
+    <div class="lg:col-start-2 lg:col-span-6">
+      <div class="cta-pillar">
+        <p class="marker mb-8">Escreva uma ideia</p>
+
+        <p class="cta-quote">
+          “não precisa saber fazer.<br>
+          <span class="text-muted">precisa só querer que aconteça.”</span>
+        </p>
+
+        <div class="text-center my-12"><span class="ornament">✺</span></div>
+
+        <p class="mono text-[10px] uppercase tracking-[0.16em] text-muted mb-3">
+          Rascunho · só você vê
+        </p>
+        <p class="cta-input">e se a gente<span class="caret"></span></p>
+
+        <div class="mt-12 flex items-baseline justify-between flex-wrap gap-4">
+          <a href="#" class="cta-btn">começar a escrever</a>
+          <p class="mono text-[10px] uppercase tracking-[0.14em] text-muted">~ 3 minutos</p>
+        </div>
+
+        <p class="marginalia mt-12">
+          Sem fila de aprovação. Sem mediação financeira. Ninguém lê até você publicar.
+        </p>
+      </div>
+    </div>
+
+    <!-- Builders — quiet sidebar -->
+    <div class="lg:col-start-9 lg:col-span-4 mt-16 lg:mt-0">
+      <p class="marker mb-8">Builders abertos a colaborar</p>
+
+      <div class="builder-card">
+        <p class="builder-handle">@mari.fe</p>
+        <p class="builder-bio">front + ilustração — procura projeto de cultura</p>
+      </div>
+      <div class="builder-card">
+        <p class="builder-handle">@jhonatan</p>
+        <p class="builder-bio">data + infra — interesse em cidades e saúde</p>
+      </div>
+      <div class="builder-card">
+        <p class="builder-handle">@lu.design</p>
+        <p class="builder-bio">produto + UX — disponível para MVP curto</p>
+      </div>
+      <div class="builder-card">
+        <p class="builder-handle">@dev.raposa</p>
+        <p class="builder-bio">backend + devops — gravita para tec. cívica</p>
+      </div>
+
+      <p class="mono text-[11px] uppercase tracking-[0.14em] text-muted mt-8">
+        <a href="#" class="hover:text-accent">— ver todos os 128 →</a>
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<div class="max-w-salon mx-auto px-8 lg:px-16">
+  <div class="breaker"><span class="glyph">✺ ✺ ✺</span></div>
+</div>
+
+<!-- ============== CICLO ============== -->
+<section class="max-w-salon mx-auto px-8 lg:px-16 pb-32">
+  <div class="grid lg:grid-cols-12 gap-x-12 mb-12">
+    <div class="lg:col-start-2 lg:col-span-8">
+      <p class="marker mb-6">Ciclo de uma ideia</p>
+      <h2 class="display italic font-medium text-ink text-[44px] lg:text-[56px] leading-[1.05] tracking-tight">
+        Proposta, discussão,<br>construção, publicação.
+      </h2>
+    </div>
+  </div>
+
+  <div class="grid lg:grid-cols-12 gap-x-12">
+    <div class="lg:col-start-2 lg:col-span-3">
+      <p class="roman">I.</p>
+      <h3 class="display italic font-semibold text-ink text-[24px] mt-4">Proponha</h3>
+      <p class="serif text-[16px] text-muted mt-3 leading-relaxed">
+        Escreva uma RFC curta. Abre automaticamente para discussão pública.
+      </p>
+    </div>
+    <div class="lg:col-span-3 mt-12 lg:mt-0">
+      <p class="roman">II.</p>
+      <h3 class="display italic font-semibold text-ink text-[24px] mt-4">Reúna builders</h3>
+      <p class="serif text-[16px] text-muted mt-3 leading-relaxed">
+        Pessoas interessadas se inscrevem. Escopo é co-definido, sem hierarquia.
+      </p>
+    </div>
+    <div class="lg:col-span-3 mt-12 lg:mt-0">
+      <p class="roman">III.</p>
+      <h3 class="display italic font-semibold text-ink text-[24px] mt-4">Construa em aberto</h3>
+      <p class="serif text-[16px] text-muted mt-3 leading-relaxed">
+        Implementação pública. Crédito compartilhado. Histórico permanente.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============== FOOTER ============== -->
+<footer class="border-t border-rule">
+  <div class="max-w-salon mx-auto px-8 lg:px-16 py-16 grid lg:grid-cols-12 gap-12">
+
+    <div class="lg:col-start-2 lg:col-span-5">
+      <p class="display italic font-medium text-ink text-[36px] leading-none">Idearium</p>
+      <p class="serif italic text-muted text-[16px] mt-5 max-w-[44ch] leading-relaxed">
+        Um projeto aberto de construção coletiva, mantido por voluntários e
+        apoiadores. Sem dono, sem anúncio, sem cobrança.
+      </p>
+      <p class="mono text-[10px] uppercase tracking-[0.18em] text-muted mt-8">
+        CC BY-SA 4.0 · v0.2 · 2026
+      </p>
+    </div>
+
+    <nav class="lg:col-span-2">
+      <p class="marker mb-5">Comunidade</p>
+      <ul class="space-y-3 serif text-[15px]">
+        <li><a href="#" class="hover:text-accent">Código de conduta</a></li>
+        <li><a href="#" class="hover:text-accent">Governança</a></li>
+        <li><a href="#" class="hover:text-accent">Participantes</a></li>
+        <li><a href="#" class="hover:text-accent">Transparência</a></li>
+      </ul>
+    </nav>
+
+    <nav class="lg:col-span-2">
+      <p class="marker mb-5">Acompanhe</p>
+      <ul class="space-y-3 serif text-[15px]">
+        <li><a href="#" class="hover:text-accent">GitHub</a></li>
+        <li><a href="#" class="hover:text-accent">RSS</a></li>
+        <li><a href="#" class="hover:text-accent">Newsletter</a></li>
+      </ul>
+    </nav>
+
+  </div>
+</footer>
+
+</body>
+</html>

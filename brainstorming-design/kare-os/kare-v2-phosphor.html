@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Idearium · Kare OS · V2 Phosphor (CRT terminal)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&family=Press+Start+2P&family=Silkscreen:wght@400;700&family=JetBrains+Mono:wght@400;500;600;700&family=VT323&display=swap" rel="stylesheet">
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<style>
+  body { margin: 0; font-family: 'Pixelify Sans', monospace; background: #050a05; image-rendering: pixelated; }
+  @keyframes blink-soft { 0%, 60% { opacity: 1; } 61%, 100% { opacity: 0; } }
+  @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  .pixel { image-rendering: pixelated; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="kare-os-icons.jsx"></script>
+<script type="text/babel" src="kare-os-ui-v2-phosphor.jsx"></script>
+
+<script type="text/babel">
+function App() {
+  return (
+    <DesignCanvas title="Idearium · Kare OS — V2 Phosphor" subtitle="VT323 + CRT terminal verde-fósforo + amber">
+      <DCSection id="boot" title="Inicialização">
+        <DCArtboard id="boot-screen" label="Boot screen — splash" width={900} height={680}>
+          <BootScreen />
+        </DCArtboard>
+      </DCSection>
+
+      <DCSection id="desktop" title="Desktop & janelas">
+        <DCArtboard id="desktop-full" label="Desktop completo · 1280×800" width={1280} height={800}>
+          <Desktop />
+        </DCArtboard>
+        <DCArtboard id="rfc-window" label="Janela: RFC viewer" width={760} height={560}>
+          <RFCWindow />
+        </DCArtboard>
+        <DCArtboard id="lab-finder" label="Janela: Lab Finder" width={760} height={560}>
+          <LabFinder />
+        </DCArtboard>
+      </DCSection>
+
+      <DCSection id="dialogs" title="Diálogos & ferramentas">
+        <DCArtboard id="stamp-dialog" label="Diálogo: Aplicar Carimbo" width={520} height={420}>
+          <StampDialog />
+        </DCArtboard>
+        <DCArtboard id="compose" label="Compositor: Nova RFC" width={760} height={560}>
+          <ComposeWindow />
+        </DCArtboard>
+        <DCArtboard id="about-box" label="About box" width={520} height={420}>
+          <AboutBox />
+        </DCArtboard>
+      </DCSection>
+
+      <DCSection id="library" title="Biblioteca de ícones">
+        <DCArtboard id="icon-grid" label="Sistema de ícones · Kare-style" width={1100} height={620}>
+          <IconLibrary />
+        </DCArtboard>
+      </DCSection>
+    </DesignCanvas>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>idearium :: index :: codex</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        bg:    '#F4F2EE',
+        paper: '#FFFFFF',
+        ink:   '#171715',
+        muted: '#6F6B65',
+        dim:   '#A09A91',
+        rule:  '#171715',
+        soft:  '#D9D5CC',
+        accent:'#1E3A5F',
+        gold:  '#9C7A22',
+      },
+      fontFamily: {
+        mono: ['IBM Plex Mono', 'ui-monospace', 'monospace'],
+        sans: ['IBM Plex Sans', 'system-ui', 'sans-serif'],
+      },
+      maxWidth: { 'doc': '900px' },
+    },
+  },
+};
+</script>
+<style>
+  :root {
+    --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+    --duration-fast: 160ms;
+  }
+  body {
+    background: #F4F2EE;
+    color: #171715;
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 14px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .sans { font-family: 'IBM Plex Sans', system-ui, sans-serif; }
+
+  /* Document container — single 80-ish col feel */
+  .doc {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* RFC-style header block */
+  .rfc-header {
+    border-bottom: 1px solid #171715;
+    padding: 20px 0 16px;
+    margin-bottom: 28px;
+  }
+  .rfc-header-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 32px;
+    font-size: 13px;
+  }
+  .rfc-header .label {
+    color: #6F6B65;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 11px;
+  }
+  .rfc-header .val { color: #171715; }
+
+  /* ASCII rule */
+  .ascii-rule {
+    color: #6F6B65;
+    font-size: 13px;
+    overflow: hidden;
+    white-space: nowrap;
+    user-select: none;
+    margin: 18px 0;
+  }
+  .ascii-rule::before {
+    content: "============================================================================================================";
+  }
+  .ascii-rule.thin::before {
+    content: "------------------------------------------------------------------------------------------------------------";
+  }
+  .ascii-rule.dot::before {
+    content: "............................................................................................................";
+  }
+
+  /* H levels — still mono */
+  h1.title {
+    font-size: 32px;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    font-weight: 700;
+    color: #171715;
+  }
+  h2.section {
+    font-size: 18px;
+    font-weight: 600;
+    color: #171715;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-top: 4px;
+  }
+  h3.subsec {
+    font-size: 15px;
+    font-weight: 600;
+    color: #171715;
+    margin-bottom: 2px;
+  }
+  h3.subsec .ix {
+    color: #9C7A22;
+    margin-right: 8px;
+  }
+
+  /* Body paragraph */
+  p.body {
+    font-size: 14px;
+    line-height: 1.62;
+    color: #2A2A26;
+  }
+
+  /* Inline marks */
+  .kbd {
+    border: 1px solid #171715;
+    padding: 1px 6px;
+    font-size: 12px;
+    background: #FFFFFF;
+  }
+  .tag {
+    color: #9C7A22;
+  }
+  .acc { color: #1E3A5F; }
+  .dim { color: #A09A91; }
+
+  /* Table-ish two-col list */
+  .kv {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 4px 18px;
+    font-size: 13px;
+  }
+  .kv .k { color: #6F6B65; }
+
+  /* Status box */
+  .status {
+    display: inline-block;
+    border: 1px solid #171715;
+    padding: 1px 8px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .status.building { border-color: #1E3A5F; color: #1E3A5F; }
+  .status.discussion { border-color: #6F6B65; color: #6F6B65; }
+
+  /* Anchor link style */
+  a.in {
+    color: #1E3A5F;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: #B5C2D2;
+    transition: text-decoration-color var(--duration-fast) var(--ease-out);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    a.in:hover { text-decoration-color: #1E3A5F; }
+  }
+
+  /* RFC list — terminal table */
+  .rfc-list {
+    border-top: 1px solid #171715;
+    border-bottom: 1px solid #171715;
+  }
+  .rfc-item {
+    display: grid;
+    grid-template-columns: 90px 1fr 130px;
+    gap: 18px;
+    padding: 16px 0;
+    border-bottom: 1px dashed #A09A91;
+    transition: background-color var(--duration-fast) var(--ease-out);
+  }
+  .rfc-item:last-child { border-bottom: 0; }
+  @media (hover: hover) and (pointer: fine) {
+    .rfc-item:hover { background: #ECE8DE; }
+  }
+
+  /* CTA — bordered box like a man-page warning */
+  .cta {
+    border: 1px solid #171715;
+    background: #FFFFFF;
+    padding: 22px 24px;
+    position: relative;
+  }
+  .cta-label {
+    position: absolute;
+    top: -10px;
+    left: 16px;
+    background: #F4F2EE;
+    padding: 0 8px;
+    font-size: 11px;
+    color: #6F6B65;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+  .cta-prompt {
+    font-size: 14px;
+    color: #171715;
+    background: #F4F2EE;
+    border: 1px solid #171715;
+    padding: 10px 12px;
+    margin-top: 14px;
+  }
+  .cta-prompt::before {
+    content: "$ ";
+    color: #9C7A22;
+  }
+  .blink {
+    display: inline-block;
+    width: 8px; height: 1em;
+    background: #171715;
+    vertical-align: text-bottom;
+    margin-left: 2px;
+    animation: blink 1.05s steps(1) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .btn {
+    display: inline-block;
+    border: 1px solid #171715;
+    background: #171715;
+    color: #F4F2EE;
+    padding: 8px 16px;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transition: transform var(--duration-fast) var(--ease-out);
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn-ghost {
+    background: transparent;
+    color: #171715;
+  }
+
+  /* Lab grid — terminal columns */
+  .lab-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0;
+    border: 1px solid #171715;
+  }
+  @media (min-width: 768px) {
+    .lab-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  .lab-cell {
+    border-right: 1px dashed #A09A91;
+    border-bottom: 1px dashed #A09A91;
+    padding: 14px 16px;
+    transition: background-color var(--duration-fast) var(--ease-out);
+  }
+  .lab-cell:nth-child(2n) { border-right: 0; }
+  @media (min-width: 768px) {
+    .lab-cell:nth-child(2n) { border-right: 1px dashed #A09A91; }
+    .lab-cell:nth-child(3n) { border-right: 0; }
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .lab-cell:hover { background: #ECE8DE; }
+  }
+
+  /* Tree-style numbering for "como funciona" */
+  .tree-row {
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px dashed #A09A91;
+  }
+  .tree-row:last-child { border-bottom: 0; }
+  .tree-num {
+    color: #9C7A22;
+    font-weight: 600;
+  }
+
+  /* Focus */
+  a:focus-visible, button:focus-visible {
+    outline: 2px solid #1E3A5F;
+    outline-offset: 2px;
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      transition-duration: 0.01ms !important;
+      animation: none !important;
+    }
+    .blink { opacity: 1; }
+  }
+</style>
+</head>
+<body class="min-h-screen">
+
+<!-- ============== TOP STRIP ============== -->
+<div class="border-b border-rule">
+  <div class="doc flex items-center justify-between py-2 text-[12px] dim">
+    <span>idearium :: community labs :: index</span>
+    <span class="flex gap-4">
+      <a href="#" class="hover:text-ink">[pt]</a>
+      <a href="#" class="dim hover:text-ink">[en]</a>
+      <a href="#" class="acc hover:underline">login →</a>
+    </span>
+  </div>
+</div>
+
+<main class="doc py-12">
+
+  <!-- ============== DOCUMENT HEADER ============== -->
+  <div class="rfc-header">
+    <div class="rfc-header-grid">
+      <div><span class="label">Document</span> <span class="val ml-2">IDR-INDEX-001</span></div>
+      <div><span class="label">Status</span> <span class="val ml-2">PUBLISHED</span></div>
+      <div><span class="label">Updated</span> <span class="val ml-2">2026-05-01</span></div>
+      <div><span class="label">Maintainers</span> <span class="val ml-2">@kae @gabi</span></div>
+      <div><span class="label">License</span> <span class="val ml-2">CC BY-SA 4.0</span></div>
+      <div><span class="label">Locale</span> <span class="val ml-2">pt-BR · en (parcial)</span></div>
+    </div>
+  </div>
+
+  <!-- ============== TITLE BLOCK ============== -->
+  <h1 class="title">Idearium</h1>
+  <p class="body mt-3 max-w-[68ch]">
+    Plataforma editorial-cívica onde ideias com potencial de impacto social viram
+    propostas estruturadas (<span class="tag">RFCs</span>) e atraem voluntários
+    dispostos a co-construí-las abertamente. Pseudonimato respeitado. Conteúdo
+    público em <span class="acc">CC BY-SA 4.0</span>. Sem mediação financeira.
+  </p>
+
+  <p class="body mt-3 italic dim">
+    "não precisa saber fazer. precisa só querer que aconteça."
+  </p>
+
+  <p class="ascii-rule"></p>
+
+  <!-- ============== SECTION 1: ABSTRACT / NAV ============== -->
+  <h2 class="section">1. Sumário</h2>
+  <ul class="kv mt-3">
+    <li class="k">2.</li><li><a href="#destaque" class="in">RFCs em destaque</a></li>
+    <li class="k">3.</li><li><a href="#labs" class="in">Laboratórios ativos</a></li>
+    <li class="k">4.</li><li><a href="#builders" class="in">Builders disponíveis</a></li>
+    <li class="k">5.</li><li><a href="#cta" class="in">Como propor uma RFC</a></li>
+    <li class="k">6.</li><li><a href="#funciona" class="in">Ciclo de uma ideia</a></li>
+    <li class="k">7.</li><li><a href="#meta" class="in">Metadados &amp; governança</a></li>
+  </ul>
+
+  <p class="ascii-rule"></p>
+
+  <!-- ============== SECTION 2: RFCs EM DESTAQUE ============== -->
+  <h2 class="section" id="destaque">2. RFCs em destaque</h2>
+  <p class="body mt-3 max-w-[68ch]">
+    Três propostas abertas à colaboração esta semana. Filtro automático: ordenadas
+    por momentum (inscrições recentes / discussão ativa). Para o índice completo
+    com filtros, ver <a href="#" class="in">/rfcs</a>.
+  </p>
+
+  <div class="rfc-list mt-6">
+
+    <article class="rfc-item">
+      <div>
+        <p class="tag">RFC-0007</p>
+        <p class="dim text-[11px] mt-1">2026-04-15</p>
+      </div>
+      <div>
+        <h3 class="subsec"><span class="ix">◈</span>Biblioteca Cooperativa de Bairro</h3>
+        <p class="body mt-1">
+          Catálogo leve para vizinhos emprestarem livros entre si — registro
+          simples de posse, devolução e reputação baseada em confiança.
+        </p>
+        <p class="dim text-[12px] mt-2">
+          author: <span class="ink">@luisa</span> ·
+          lab: <span class="ink">educacao</span> ·
+          enrolled: <span class="ink">8</span> ·
+          comments: <span class="ink">23</span> ·
+          <a href="#" class="in">read →</a>
+        </p>
+      </div>
+      <div class="text-right">
+        <span class="status building">in_building</span>
+      </div>
+    </article>
+
+    <article class="rfc-item">
+      <div>
+        <p class="tag">RFC-0011</p>
+        <p class="dim text-[11px] mt-1">2026-04-13</p>
+      </div>
+      <div>
+        <h3 class="subsec"><span class="ix">◇</span>Rastreamento Anônimo de Enchentes Urbanas</h3>
+        <p class="body mt-1">
+          Canal colaborativo de relatos geolocalizados sobre alagamentos,
+          que agrega ocorrências em tempo quase-real como dado aberto,
+          preservando anonimato.
+        </p>
+        <p class="dim text-[12px] mt-2">
+          author: <span class="ink">@rafael</span> ·
+          lab: <span class="ink">cidades</span> ·
+          enrolled: <span class="ink">5</span> ·
+          comments: <span class="ink">14</span> ·
+          <a href="#" class="in">read →</a>
+        </p>
+      </div>
+      <div class="text-right">
+        <span class="status discussion">in_discussion</span>
+      </div>
+    </article>
+
+    <article class="rfc-item">
+      <div>
+        <p class="tag">RFC-0014</p>
+        <p class="dim text-[11px] mt-1">2026-05-01</p>
+      </div>
+      <div>
+        <h3 class="subsec"><span class="ix">✚</span>Farmácia Solidária por Geolocalização</h3>
+        <p class="body mt-1">
+          Rede de pontos comunitários onde pessoas doam medicamentos fechados
+          e dentro da validade, com busca por proximidade e moderação local.
+        </p>
+        <p class="dim text-[12px] mt-2">
+          author: <span class="ink">@marina</span> ·
+          lab: <span class="ink">saude</span> ·
+          enrolled: <span class="ink">11</span> ·
+          comments: <span class="ink">31</span> ·
+          <a href="#" class="in">read →</a>
+        </p>
+      </div>
+      <div class="text-right">
+        <span class="status building">in_building</span>
+      </div>
+    </article>
+
+  </div>
+
+  <p class="dim text-[12px] mt-4">3 of 47 active RFCs · <a href="#" class="in">view all →</a></p>
+
+  <p class="ascii-rule"></p>
+
+  <!-- ============== SECTION 3: LABS ============== -->
+  <h2 class="section" id="labs">3. Laboratórios ativos</h2>
+  <p class="body mt-3 max-w-[68ch]">
+    Recortes temáticos. Não são silos — uma RFC pertence a um lab, mas qualquer
+    pessoa transita entre eles. Ordenação por número de RFCs em construção.
+  </p>
+
+  <div class="lab-grid mt-6">
+    <a href="#" class="lab-cell">
+      <p><span class="tag mr-2">◈</span><span class="font-semibold">Lab. Educação</span></p>
+      <p class="dim text-[12px] mt-1">12 ideias · 34 builders</p>
+    </a>
+    <a href="#" class="lab-cell">
+      <p><span class="tag mr-2">⌘</span><span class="font-semibold">Lab. Tec. Cívica</span></p>
+      <p class="dim text-[12px] mt-1">8 ideias · 26 builders</p>
+    </a>
+    <a href="#" class="lab-cell">
+      <p><span class="tag mr-2">◇</span><span class="font-semibold">Lab. Cidades</span></p>
+      <p class="dim text-[12px] mt-1">9 ideias · 22 builders</p>
+    </a>
+    <a href="#" class="lab-cell">
+      <p><span class="tag mr-2">✚</span><span class="font-semibold">Lab. Saúde</span></p>
+      <p class="dim text-[12px] mt-1">7 ideias · 18 builders</p>
+    </a>
+    <a href="#" class="lab-cell">
+      <p><span class="tag mr-2">♪</span><span class="font-semibold">Lab. Cultura</span></p>
+      <p class="dim text-[12px] mt-1">6 ideias · 14 builders</p>
+    </a>
+    <a href="#" class="lab-cell">
+      <p><span class="tag mr-2">◆</span><span class="font-semibold">Lab. Econ. Solidária</span></p>
+      <p class="dim text-[12px] mt-1">5 ideias · 14 builders</p>
+    </a>
+  </div>
+
+  <p class="ascii-rule"></p>
+
+  <!-- ============== SECTION 4: BUILDERS ============== -->
+  <h2 class="section" id="builders">4. Builders disponíveis</h2>
+  <p class="body mt-3 max-w-[68ch]">
+    Voluntários sinalizando <span class="kbd">isOpenToWork=true</span>. Lista
+    pública pseudônima — sem currículo, sem hierarquia. Procurem por
+    causa, não por reputação.
+  </p>
+
+  <ul class="mt-6 border-t border-b border-rule">
+    <li class="grid grid-cols-[180px_1fr] gap-6 py-3 border-b border-dashed border-[#A09A91]">
+      <span class="font-semibold">@mari.fe</span>
+      <span class="dim">front + ilustração — procura projeto de cultura</span>
+    </li>
+    <li class="grid grid-cols-[180px_1fr] gap-6 py-3 border-b border-dashed border-[#A09A91]">
+      <span class="font-semibold">@jhonatan</span>
+      <span class="dim">data + infra — interesse em cidades e saúde</span>
+    </li>
+    <li class="grid grid-cols-[180px_1fr] gap-6 py-3 border-b border-dashed border-[#A09A91]">
+      <span class="font-semibold">@lu.design</span>
+      <span class="dim">produto + UX — disponível para MVP curto</span>
+    </li>
+    <li class="grid grid-cols-[180px_1fr] gap-6 py-3">
+      <span class="font-semibold">@dev.raposa</span>
+      <span class="dim">backend + devops — gravita para tec. cívica</span>
+    </li>
+  </ul>
+
+  <p class="dim text-[12px] mt-3">4 of 128 · <a href="#" class="in">view all →</a></p>
+
+  <p class="ascii-rule"></p>
+
+  <!-- ============== SECTION 5: CTA ============== -->
+  <h2 class="section" id="cta">5. Propor uma RFC</h2>
+  <p class="body mt-3 max-w-[68ch]">
+    Não há fila de aprovação. Rascunho é privado por padrão; publicação atribui
+    número permanente (<span class="tag">RFC-NNNN</span>) e abre para discussão
+    e inscrições de builders.
+  </p>
+
+  <div class="cta mt-7 relative">
+    <span class="cta-label">stdin: nova-ideia</span>
+
+    <p class="text-[16px] font-semibold mt-2">não precisa saber fazer.</p>
+    <p class="text-[16px] font-semibold">precisa só querer que aconteça.</p>
+
+    <div class="cta-prompt">e se a gente<span class="blink"></span></div>
+
+    <div class="flex items-center justify-between mt-5 flex-wrap gap-3">
+      <a href="#" class="btn">[ começar a escrever ]</a>
+      <p class="dim text-[12px]">leva ~3 min · ninguém lê até você publicar</p>
+    </div>
+  </div>
+
+  <p class="ascii-rule thin"></p>
+
+  <!-- ============== SECTION 6: COMO FUNCIONA ============== -->
+  <h2 class="section" id="funciona">6. Ciclo de uma ideia</h2>
+
+  <div class="mt-6 border-t border-b border-rule">
+    <div class="tree-row">
+      <span class="tree-num">[01]</span>
+      <div>
+        <p class="font-semibold">Proponha</p>
+        <p class="body mt-1">Escreva uma RFC curta. Abre automaticamente para discussão pública.</p>
+      </div>
+    </div>
+    <div class="tree-row">
+      <span class="tree-num">[02]</span>
+      <div>
+        <p class="font-semibold">Reúna builders</p>
+        <p class="body mt-1">Pessoas interessadas se inscrevem. Escopo é co-definido, sem hierarquia.</p>
+      </div>
+    </div>
+    <div class="tree-row">
+      <span class="tree-num">[03]</span>
+      <div>
+        <p class="font-semibold">Construa em aberto</p>
+        <p class="body mt-1">Implementação pública. Crédito compartilhado. Histórico permanente.</p>
+      </div>
+    </div>
+  </div>
+
+  <p class="ascii-rule"></p>
+
+  <!-- ============== SECTION 7: META ============== -->
+  <h2 class="section" id="meta">7. Metadados</h2>
+  <ul class="kv mt-3">
+    <li class="k">RFCs ativas</li><li>47</li>
+    <li class="k">Builders registrados</li><li>128</li>
+    <li class="k">Laboratórios</li><li>6</li>
+    <li class="k">RFCs publicadas (este mês)</li><li>3</li>
+    <li class="k">Idiomas suportados</li><li>pt-BR, en (interface) · pt-BR, en (conteúdo, opcional)</li>
+    <li class="k">Modelo de sustento</li><li>Apoio individual + grants institucionais (sem cobrança de usuário)</li>
+    <li class="k">Governança</li><li>Co-criadores: @kae @gabi · maintainers: TBD</li>
+  </ul>
+
+  <p class="ascii-rule thin"></p>
+
+  <p class="dim text-[12px]">
+    This document is rendered statically; no JavaScript framework was harmed.
+    For machine-readable feed, see <a href="#" class="in">/feed.atom</a>.
+  </p>
+
+</main>
+
+<!-- ============== FOOTER ============== -->
+<footer class="border-t border-rule mt-8">
+  <div class="doc py-6 grid sm:grid-cols-3 gap-4 text-[12px] dim">
+    <p>idearium · v0.2 · 2026</p>
+    <p class="text-center">CC BY-SA 4.0 · AGPL-3.0 (código)</p>
+    <p class="text-right">
+      <a href="#" class="hover:text-ink">github</a> ·
+      <a href="#" class="hover:text-ink">rss</a> ·
+      <a href="#" class="hover:text-ink">code-of-conduct</a>
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>

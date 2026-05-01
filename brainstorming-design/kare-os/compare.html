@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Idearium · Kare OS — comparar variantes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&family=Press+Start+2P&family=Silkscreen:wght@400;700&family=JetBrains+Mono:wght@400;500;600;700&family=VT323&family=Workbench&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Pixelify Sans', monospace;
+    background: #FAFAF7;
+    color: #1C1C1B;
+    padding: 40px 24px 80px;
+  }
+  .wrap { max-width: 1200px; margin: 0 auto; }
+  h1 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: #6B6560;
+    margin: 0 0 8px;
+  }
+  .lede {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: #6B6560;
+    max-width: 60ch;
+    line-height: 1.55;
+    margin: 0 0 40px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 22px;
+  }
+  .card {
+    border: 2px solid #1C1C1B;
+    background: #FFFFFF;
+    box-shadow: 4px 4px 0 #1C1C1B;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1),
+                box-shadow 160ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  .card:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 #1C1C1B; }
+  .card:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 #1C1C1B; }
+  .card-title {
+    background: #1C1C1B;
+    color: #FAFAF7;
+    padding: 6px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .card-body { padding: 18px 16px 16px; flex: 1; }
+  .pitch {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #6B6560;
+    line-height: 1.5;
+    min-height: 3em;
+  }
+  .name {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.05;
+    margin: 4px 0 12px;
+  }
+  .swatch-row {
+    display: flex;
+    gap: 0;
+    margin: 14px 0 12px;
+    border: 1px solid #1C1C1B;
+  }
+  .swatch {
+    flex: 1;
+    height: 24px;
+  }
+  .meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: #6B6560;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    line-height: 1.6;
+    border-top: 1px dashed #C9C5BC;
+    padding-top: 10px;
+  }
+  .meta .k { color: #1C1C1B; font-weight: 700; }
+  .open-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: #FAFAF7;
+    background: #C8A04A;
+    padding: 2px 6px;
+  }
+
+  /* Sample text styled in each variant's display font */
+  .sample-vt323     { font-family: 'VT323', monospace; }
+  .sample-press     { font-family: 'Press Start 2P', monospace; font-size: 16px !important; line-height: 1.5; }
+  .sample-silkscreen{ font-family: 'Silkscreen', monospace; font-size: 16px !important; }
+  .sample-workbench { font-family: 'Workbench', monospace; }
+
+  .footer-note {
+    margin-top: 60px;
+    padding-top: 30px;
+    border-top: 1px solid #C9C5BC;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #6B6560;
+    line-height: 1.7;
+  }
+  code {
+    background: #F5F2EB;
+    padding: 2px 6px;
+    font-size: 0.92em;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Kare OS · Comparador de variantes</h1>
+  <p class="lede">
+    5 versões do mesmo design system Kare. Mesmo conteúdo (8 artboards), tokens
+    de fonte e paleta diferentes. Clique pra abrir em nova aba e voltar pra
+    comparar. As cores debaixo do nome mostram a paleta completa em ordem:
+    desktop · cream · soft · ink · accent.
+  </p>
+
+  <div class="grid">
+
+    <!-- ORIGINAL -->
+    <a class="card" href="Idearium - Kare OS.html" target="_blank">
+      <div class="card-title">
+        <span>00 · ORIGINAL</span>
+        <span class="open-tag">abrir →</span>
+      </div>
+      <div class="card-body">
+        <div class="name sample-press">IDEARIUM</div>
+        <p class="pitch">
+          Press Start 2P + cobalto Mac OS clássico. Baseline pra comparar.
+        </p>
+        <div class="swatch-row">
+          <div class="swatch" style="background:#3B82E0"></div>
+          <div class="swatch" style="background:#FFF7E0"></div>
+          <div class="swatch" style="background:#FFFBEF"></div>
+          <div class="swatch" style="background:#0A0A0A"></div>
+          <div class="swatch" style="background:#FFD43B"></div>
+        </div>
+        <div class="meta">
+          <span class="k">FONTE:</span> Press Start 2P<br>
+          <span class="k">PALETA:</span> Mac OS / Susan Kare 1984
+        </div>
+      </div>
+    </a>
+
+    <!-- V1 SERENO -->
+    <a class="card" href="kare-v1-sereno.html" target="_blank">
+      <div class="card-title">
+        <span>V1 · SERENO</span>
+        <span class="open-tag">abrir →</span>
+      </div>
+      <div class="card-body">
+        <div class="name sample-vt323">IDEARIUM</div>
+        <p class="pitch">
+          VT323 (terminal mais respirado) + paleta VISAO. "Kare OS calmado",
+          alinhado ao §12 da visão.
+        </p>
+        <div class="swatch-row">
+          <div class="swatch" style="background:#1E3A5F"></div>
+          <div class="swatch" style="background:#FAFAF7"></div>
+          <div class="swatch" style="background:#F5F2EB"></div>
+          <div class="swatch" style="background:#1C1C1B"></div>
+          <div class="swatch" style="background:#C8A04A"></div>
+        </div>
+        <div class="meta">
+          <span class="k">FONTE:</span> VT323<br>
+          <span class="k">PALETA:</span> Navy VISAO + cream + gold
+        </div>
+      </div>
+    </a>
+
+    <!-- V2 PHOSPHOR -->
+    <a class="card" href="kare-v2-phosphor.html" target="_blank">
+      <div class="card-title">
+        <span>V2 · PHOSPHOR</span>
+        <span class="open-tag">abrir →</span>
+      </div>
+      <div class="card-body">
+        <div class="name sample-vt323" style="color:#33FF66; background:#0A1F0A; padding:4px 8px; display:inline-block;">IDEARIUM</div>
+        <p class="pitch">
+          VT323 + CRT terminal verde-fósforo + amber. Inverte o tema: dark
+          mode radical, vibe arcade dos 80s.
+        </p>
+        <div class="swatch-row">
+          <div class="swatch" style="background:#050A05"></div>
+          <div class="swatch" style="background:#0A1F0A"></div>
+          <div class="swatch" style="background:#142914"></div>
+          <div class="swatch" style="background:#33FF66"></div>
+          <div class="swatch" style="background:#FFB627"></div>
+        </div>
+        <div class="meta">
+          <span class="k">FONTE:</span> VT323<br>
+          <span class="k">PALETA:</span> CRT phosphor green + amber
+        </div>
+      </div>
+    </a>
+
+    <!-- V3 RISO -->
+    <a class="card" href="kare-v3-riso.html" target="_blank">
+      <div class="card-title">
+        <span>V3 · RISO</span>
+        <span class="open-tag">abrir →</span>
+      </div>
+      <div class="card-body">
+        <div class="name sample-silkscreen">IDEARIUM</div>
+        <p class="pitch">
+          Silkscreen (bitmap mais refinado) + paleta riso de zine indie.
+          2 cores impressas: orange + navy. Vibe samizdat.
+        </p>
+        <div class="swatch-row">
+          <div class="swatch" style="background:#D8602E"></div>
+          <div class="swatch" style="background:#F4EFD8"></div>
+          <div class="swatch" style="background:#EAE3C5"></div>
+          <div class="swatch" style="background:#1E2D5F"></div>
+          <div class="swatch" style="background:#6B7345"></div>
+        </div>
+        <div class="meta">
+          <span class="k">FONTE:</span> Silkscreen<br>
+          <span class="k">PALETA:</span> Riso (orange + paper + navy + olive)
+        </div>
+      </div>
+    </a>
+
+    <!-- V4 WORKBENCH -->
+    <a class="card" href="kare-v4-workbench.html" target="_blank">
+      <div class="card-title">
+        <span>V4 · WORKBENCH</span>
+        <span class="open-tag">abrir →</span>
+      </div>
+      <div class="card-body">
+        <div class="name sample-workbench">IDEARIUM</div>
+        <p class="pitch">
+          Workbench (fonte variável pixel, mais suave) + paleta original
+          intacta. <strong>Isola a variável fonte</strong> — você sente
+          só o que a fonte muda.
+        </p>
+        <div class="swatch-row">
+          <div class="swatch" style="background:#3B82E0"></div>
+          <div class="swatch" style="background:#FFF7E0"></div>
+          <div class="swatch" style="background:#FFFBEF"></div>
+          <div class="swatch" style="background:#0A0A0A"></div>
+          <div class="swatch" style="background:#FFD43B"></div>
+        </div>
+        <div class="meta">
+          <span class="k">FONTE:</span> Workbench (variable axes BLED+SCAN)<br>
+          <span class="k">PALETA:</span> Original (Mac OS Kare)
+        </div>
+      </div>
+    </a>
+
+  </div>
+
+  <div class="footer-note">
+    <p><strong>Como interpretar:</strong></p>
+    <ul style="line-height:1.8;">
+      <li><code>V1 Sereno</code> e <code>V2 Phosphor</code> usam a mesma fonte
+        (VT323) com paletas opostas — comparar essas duas isola o eixo PALETA</li>
+      <li><code>V4 Workbench</code> mantém a paleta original e só troca a fonte
+        — comparar com o ORIGINAL isola o eixo FONTE</li>
+      <li>Se você gostar da fonte de uma e da paleta de outra, me avisa qual
+        combinação que eu gero a quinta variante</li>
+      <li>Cada arquivo é self-contained (JSX próprio em <code>kare-os-ui-vN-NOME.jsx</code>),
+        modificações localizadas, fácil de mexer mais</li>
+    </ul>
+  </div>
+
+</div>
+</body>
+</html>

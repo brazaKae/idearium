@@ -1,7 +1,7 @@
 # Idearium — Roadmap do Backend
 
 > Roadmap pragmático para Kae, backend dev solo, levar Idearium do zero ao MVP em produção.
-> Premissa: **visão consolidada em `VISAO.md`** (SSOT). Base de UI: `mockups/home/index.html`.
+> Premissa: **visão consolidada em `VISAO.md`** (SSOT). Base de UI: `brainstorming-design/editorial/baseline.html`.
 > O backend existe para alimentar essa interface e nada além.
 >
 > **Decisões fundadoras já resolvidas** (ver `VISAO.md` §10): visão B, login email/senha + GitHub + Google, RFCs editáveis com histórico, identidade pseudônima, pós-moderação, comentários lineares, **bilíngue pt-BR/en desde o MVP**, hospedagem gerenciada.
@@ -330,7 +330,7 @@ idearium/  (branch development)
 │       ├── helpers/             ← createTestApp, cleanDatabase, registerUser, createPublishedRfc
 │       └── setup-e2e.ts         ← roda migrations + seed antes do Jest
 ├── apps/web/                    ← (não criado ainda — Gabriele faz)
-├── mockups/home/index.html      ← referência de design
+├── brainstorming-design/editorial/baseline.html      ← referência de design
 ├── docker-compose.yml           ← Postgres 16 local
 ├── .github/workflows/ci.yml     ← lint + build + e2e com Postgres como service
 ├── VISAO.md                     ← SSOT do projeto
@@ -435,7 +435,7 @@ Cada etapa: objetivo, deliverables, dependências adicionadas, endpoints novos, 
 **Objetivo:** ter um repo com NestJS rodando, conectado a Postgres local via Prisma, com 1 endpoint trivial em produção.
 
 **Deliverables:**
-- Monorepo organizado dentro do repo atual `idearium/`: `apps/api/` (Kae), `apps/web/` (Gabriele), `mockups/` (já existe). `package.json` na raiz com **npm workspaces** ativado. Sem Nx/Lerna/Turborepo — overkill para 2 apps.
+- Monorepo organizado dentro do repo atual `idearium/`: `apps/api/` (Kae), `apps/web/` (Gabriele), `brainstorming-design/` (já existe). `package.json` na raiz com **npm workspaces** ativado. Sem Nx/Lerna/Turborepo — overkill para 2 apps.
 - `apps/api` rodando com `npm run start:dev` da raiz ou da pasta da app.
 - Docker Compose com Postgres 16.
 - Prisma instalado, schema vazio, primeira migration vazia, `prisma generate`.
@@ -873,7 +873,7 @@ idearium/
 ├── apps/
 │   ├── api/           # backend NestJS (Kae)
 │   └── web/           # frontend (Gabriele)
-├── mockups/           # já existe
+├── brainstorming-design/           # já existe
 ├── docker-compose.yml # postgres local compartilhado
 ├── package.json       # root: workspaces + scripts agregados
 ├── VISAO.md

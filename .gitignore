@@ -47,8 +47,15 @@ Thumbs.db
 
 # Docs internas (não publicar)
 ANALISE_PROJETO.md
+FRONTEND_DECISIONS.md
 
 # Claude Code context files (local tooling, not project content)
 .claude/
 AGENTS.md
 CLAUDE.md
+
+# Beads
+.beads/
+.dolt/
+*.db
+.beads-credential-key
