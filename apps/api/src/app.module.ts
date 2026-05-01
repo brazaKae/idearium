@@ -21,6 +21,8 @@ import { HealthModule } from './health/health.module';
 import { LabsModule } from './labs/labs.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { RfcsModule } from './rfcs/rfcs.module';
+import { SearchModule } from './search/search.module';
+import { TagsModule } from './tags/tags.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -73,6 +75,8 @@ import { UsersModule } from './users/users.module';
     RfcsModule,
     EnrollmentsModule,
     CommentsModule,
+    TagsModule,
+    SearchModule,
     HealthModule,
   ],
   providers: [

@@ -1,6 +1,6 @@
 // Idearium — Prisma schema
 // Schema canônico vive aqui. Modelos de domínio são adicionados conforme as etapas
-// do ROADMAP_BACKEND.md. Etapa atual: 3 (Enrollments + Comments).
+// do ROADMAP_BACKEND.md. Etapa atual: 4 (Tags + busca FTS bilíngue).
 
 generator client {
   provider = "prisma-client-js"
@@ -135,6 +135,7 @@ model Rfc {
   versions    RfcVersion[]
   enrollments Enrollment[]
   comments    Comment[]
+  tags        TagsOnRfcs[]
 
   @@index([status, publishedAt])
   @@index([labId])
@@ -195,4 +196,26 @@ model Comment {
 
   @@index([rfcId, createdAt])
   @@index([authorId])
+}
+
+// =====================================================
+// Etapa 4 — Tags + busca FTS bilíngue
+// =====================================================
+
+model Tag {
+  id        String       @id @default(uuid())
+  slug      String       @unique
+  name      String
+  createdAt DateTime     @default(now())
+  rfcs      TagsOnRfcs[]
+}
+
+model TagsOnRfcs {
+  rfcId String
+  tagId String
+  rfc   Rfc @relation(fields: [rfcId], references: [id], onDelete: Cascade)
+  tag   Tag @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([rfcId, tagId])
+  @@index([tagId])
 }
