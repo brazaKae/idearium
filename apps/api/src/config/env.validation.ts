@@ -6,6 +6,9 @@ type Env = {
   APP_VERSION: string;
   LOG_LEVEL: 'fatal' | 'error' | 'warn' | 'info' | 'debug' | 'trace';
   DATABASE_URL: string;
+  JWT_ACCESS_SECRET: string;
+  JWT_ACCESS_EXPIRES: string;
+  JWT_REFRESH_EXPIRES_DAYS: number;
   SENTRY_DSN: string | null;
   SENTRY_ENVIRONMENT: string;
 };
@@ -42,6 +45,9 @@ export const validateEnv = (raw: NodeJS.ProcessEnv): Env => {
     APP_VERSION: optional(raw.APP_VERSION, '0.1.0'),
     LOG_LEVEL: logLevel as Env['LOG_LEVEL'],
     DATABASE_URL: required('DATABASE_URL', raw.DATABASE_URL),
+    JWT_ACCESS_SECRET: required('JWT_ACCESS_SECRET', raw.JWT_ACCESS_SECRET),
+    JWT_ACCESS_EXPIRES: optional(raw.JWT_ACCESS_EXPIRES, '15m'),
+    JWT_REFRESH_EXPIRES_DAYS: parseInt(optional(raw.JWT_REFRESH_EXPIRES_DAYS, '30'), 10),
     SENTRY_DSN: nullable(raw.SENTRY_DSN),
     SENTRY_ENVIRONMENT: optional(raw.SENTRY_ENVIRONMENT, nodeEnv),
   };

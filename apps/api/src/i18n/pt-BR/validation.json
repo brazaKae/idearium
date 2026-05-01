@@ -2,6 +2,6 @@
   "IS_EMAIL": "Deve ser um e-mail válido.",
   "IS_NOT_EMPTY": "Campo obrigatório.",
   "IS_STRING": "Deve ser um texto.",
-  "MIN_LENGTH": "Deve ter no mínimo $constraint1 caracteres.",
-  "MAX_LENGTH": "Deve ter no máximo $constraint1 caracteres."
+  "MIN_LENGTH": "Deve ter no mínimo {constraints.0} caracteres.",
+  "MAX_LENGTH": "Deve ter no máximo {constraints.0} caracteres."
 }

@@ -1,6 +1,6 @@
 // Idearium — Prisma schema
-// Schema canônico vive aqui. Modelos de domínio serão adicionados conforme as etapas
-// do ROADMAP_BACKEND.md (Etapa 1: User; Etapa 2: Lab, Rfc, RfcVersion; ...).
+// Schema canônico vive aqui. Modelos de domínio são adicionados conforme as etapas
+// do ROADMAP_BACKEND.md. Etapa atual: 1 (Auth + Users + BuilderProfile).
 
 generator client {
   provider = "prisma-client-js"
@@ -11,10 +11,65 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Placeholder para Prisma aceitar o schema vazio antes da Etapa 1.
-// Pode ser usado depois para metadados internos (versão de schema, flags, etc).
+// Placeholder / tabela utilitária para metadados internos do app.
 model AppMeta {
   key       String   @id
   value     String
   updatedAt DateTime @updatedAt
+}
+
+// =====================================================
+// Etapa 1 — Auth + Users
+// =====================================================
+
+enum UserRole {
+  USER
+  MAINTAINER
+}
+
+model User {
+  id              String   @id @default(uuid())
+  username        String   @unique
+  email           String   @unique
+  passwordHash    String?
+  githubId        String?  @unique
+  googleId        String?  @unique
+  fullName        String?
+  bio             String?
+  avatarUrl       String?
+  preferredLocale String   @default("pt-BR")
+  emailVerified   Boolean  @default(false)
+  isActive        Boolean  @default(true)
+  role            UserRole @default(USER)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  builderProfile BuilderProfile?
+  refreshTokens  RefreshToken[]
+}
+
+model BuilderProfile {
+  userId       String   @id
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  headline     String?
+  topics       String[] @default([])
+  isOpenToWork Boolean  @default(true)
+  updatedAt    DateTime @updatedAt
+
+  @@index([isOpenToWork])
+}
+
+model RefreshToken {
+  id         String    @id @default(uuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash  String    @unique
+  expiresAt  DateTime
+  revokedAt  DateTime?
+  userAgent  String?
+  ipAddress  String?
+  createdAt  DateTime  @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
 }

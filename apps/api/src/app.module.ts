@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { APP_FILTER } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
+import { SentryModule } from '@sentry/nestjs/setup';
 import { LoggerModule } from 'nestjs-pino';
 import {
   AcceptLanguageResolver,
@@ -10,13 +11,17 @@ import {
   QueryResolver,
 } from 'nestjs-i18n';
 import { join } from 'path';
+import { AuthModule } from './auth/auth.module';
+import { BuildersModule } from './builders/builders.module';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { validateEnv, type AppEnv } from './config/env.validation';
 import { HealthModule } from './health/health.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
+    SentryModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
       cache: true,
@@ -50,6 +55,9 @@ import { PrismaModule } from './prisma/prisma.module';
       ],
     }),
     PrismaModule,
+    AuthModule,
+    UsersModule,
+    BuildersModule,
     HealthModule,
   ],
   providers: [
