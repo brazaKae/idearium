@@ -1,0 +1,80 @@
+---
+/* ================================================================
+   boot.astro — tela de boot do Idearium
+   ================================================================
+   Roteia em GET /boot.
+
+   Sequência narrativa (~2.4s total, pós-Emil-review):
+
+     0ms      → logo entrance (fade + scale 0.95→1, 800ms ease-out)
+                + bar+caption presentes mas bar não anima ainda
+     400ms    → bar começa a encher (1500ms ease-out cubic)
+     1900ms   → bar completa
+                → modo loading fade-out + blur(2px)
+                → modo welcome fade-in + slide-up + blur(2px→0)
+     1980ms   → button cascade (80ms após welcome)
+     1900ms   → logo float infinito começa (uma ação contínua só)
+     ∞        → caret pisca (600ms steps), logo flutua
+
+   Cohesion principle: durante load só a bar age. Logo parada,
+   bg parado. Após load, logo flutua sozinha como ancora viva.
+   ================================================================ */
+import Layout from '../layouts/Layout.astro';
+import BootSequence from '../components/react/BootSequence';
+
+// Transição soft slide — duration 500ms (cohesion com atrio)
+const softSlide = {
+  forwards: {
+    old: { name: 'soft-slide-out-left',  duration: '700ms', easing: 'cubic-bezier(0.23, 1, 0.32, 1)' },
+    new: { name: 'soft-slide-in-right',  duration: '700ms', easing: 'cubic-bezier(0.23, 1, 0.32, 1)' },
+  },
+  backwards: {
+    old: { name: 'soft-slide-out-right', duration: '700ms', easing: 'cubic-bezier(0.23, 1, 0.32, 1)' },
+    new: { name: 'soft-slide-in-left',   duration: '700ms', easing: 'cubic-bezier(0.23, 1, 0.32, 1)' },
+  },
+};
+
+const systemVersion = '0.1';
+---
+
+<Layout title="Idearium · Boot">
+  <main
+    transition:animate={softSlide}
+    class="min-h-screen w-full flex flex-col items-center justify-center relative overflow-hidden"
+    style="
+      background-color: var(--color-cobalto);
+      background-image: radial-gradient(circle at 1.5px 1.5px, var(--color-cream-dot) 1.5px, transparent 0);
+      background-size: 8px 8px;
+    "
+  >
+
+    {/* === Stack central — gap 18px (logo + boot sequence próximos) === */}
+    <div class="flex flex-col items-center gap-[18px]">
+
+      {/* Container fixo de 140px reserva o espaço — logo float não desloca o gap.
+          transition:name no img diretamente (mesma name do átrio) pra morph
+          de tamanho/posição funcionar entre páginas. */}
+      <div class="boot-logo-frame">
+        <img
+          src="/idearium-logo.svg"
+          alt="Idearium"
+          height="140"
+          class="pixel boot-logo"
+          style="height: 140px; width: auto;"
+          transition:name="hero-logo"
+        />
+      </div>
+
+      {/* React island com bar+caption (modo loading) e welcome+button (modo done) */}
+      <BootSequence duration={1500} startDelay={400} client:load />
+
+    </div>
+
+    {/* Footer minimalista */}
+    <footer class="absolute bottom-3 left-0 right-0 px-4 flex justify-between font-mono text-cream text-[10px] opacity-60">
+      <span>v.{systemVersion}</span>
+      <span>idearium.community</span>
+    </footer>
+
+  </main>
+</Layout>

@@ -1,17 +1,39 @@
 ---
+/* ================================================================
+   index.astro — página raiz (provisória, só pra testar a stack)
+   ================================================================
+   Esta é uma página TEMPORÁRIA pra validar que:
+     - Layout.astro carrega corretamente (fontes + global.css)
+     - Tokens do Tailwind 4 viraram classes utility (bg-cobalto, etc)
+     - As 3 fontes pixel-art baixaram e renderizam
 
+   Depois que o Boot estiver pronto, esta página vai virar a entrada
+   real da app (/atrio ou redirect pra /boot).
+   ================================================================ */
+import Layout from '../layouts/Layout.astro';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout title="Idearium · Stack OK">
+  <main class="min-h-screen bg-cobalto p-8 text-cream">
+
+    <h1 class="font-display text-3xl mb-6">IDEARIUM</h1>
+    <p class="font-ui text-xl mb-2">Stack carregada com sucesso.</p>
+    <p class="font-mono text-sm opacity-70">Astro 6 · React 19 · Tailwind 4 · Node 22</p>
+
+    <section class="mt-10 max-w-md">
+      <div class="bg-cream text-ink p-6 border-2 border-ink shadow-window">
+        <p class="font-display text-xs mb-3">JANELA DE TESTE</p>
+        <p class="font-ui mb-2">Se você está vendo:</p>
+        <ul class="font-ui text-sm space-y-1 list-disc list-inside">
+          <li>fundo <span class="bg-cobalto text-cream px-1">cobalto</span></li>
+          <li>fonte <span class="font-display">pixel</span> nos títulos</li>
+          <li>sombra dura <span class="text-yellow">amarela</span> embaixo da janela</li>
+        </ul>
+        <p class="font-mono text-xs mt-4 text-cobalto-light">
+          → tokens funcionando, próximo passo é o Boot screen.
+        </p>
+      </div>
+    </section>
+
+  </main>
+</Layout>

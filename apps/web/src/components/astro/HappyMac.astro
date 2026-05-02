@@ -1,0 +1,67 @@
+---
+/* ================================================================
+   HappyMac.astro — ícone "mac feliz" 13×13 pixel art
+   ================================================================
+   Reprodução fiel do ícone original Susan Kare (1984), portado
+   do handoff Kare OS como grid binário.
+
+   Renderiza como SVG inline com 1 <rect> por cell preenchida.
+   Tamanho controlado por `scale` (default 6 → 78×78px).
+
+   Uso:
+     <HappyMac scale={6} color="#FFF7E0" />
+   ================================================================ */
+
+interface Props {
+  scale?: number;       // px por cell (default 6)
+  color?: string;       // cor das cells preenchidas (default branco-cream)
+  ariaLabel?: string;
+}
+
+const { scale = 6, color = '#FFF7E0', ariaLabel = 'Idearium' } = Astro.props;
+
+// Grid binário 13×13 — cells com 1 são preenchidas, 0 são transparentes.
+// Mesmo padrão do kare-os-icons.jsx (Susan Kare original).
+const grid = [
+  [0,0,1,1,1,1,1,1,1,1,1,0,0],
+  [0,1,0,0,0,0,0,0,0,0,0,1,0],
+  [1,0,1,0,0,0,0,0,0,0,1,0,1],
+  [1,0,1,1,1,0,0,0,1,1,1,0,1],
+  [1,0,1,1,1,0,0,0,1,1,1,0,1],
+  [1,0,0,0,0,0,0,0,0,0,0,0,1],
+  [1,0,0,1,0,0,0,0,0,1,0,0,1],
+  [1,0,0,0,1,0,0,0,1,0,0,0,1],
+  [1,0,0,0,0,1,1,1,0,0,0,0,1],
+  [1,0,0,0,0,0,0,0,0,0,0,0,1],
+  [0,1,0,0,0,0,0,0,0,0,0,1,0],
+  [0,0,1,1,1,1,1,1,1,1,1,0,0],
+  [0,0,1,1,1,1,1,1,1,1,1,0,0],
+];
+
+const size = grid.length * scale; // 13 × scale
+---
+
+<svg
+  width={size}
+  height={size}
+  viewBox={`0 0 ${size} ${size}`}
+  xmlns="http://www.w3.org/2000/svg"
+  shape-rendering="crispEdges"
+  class="pixel"
+  role="img"
+  aria-label={ariaLabel}
+>
+  {grid.map((row, y) =>
+    row.map((cell, x) =>
+      cell === 1 ? (
+        <rect
+          x={x * scale}
+          y={y * scale}
+          width={scale}
+          height={scale}
+          fill={color}
+        />
+      ) : null
+    )
+  )}
+</svg>

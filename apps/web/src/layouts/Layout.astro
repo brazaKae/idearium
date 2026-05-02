@@ -1,0 +1,71 @@
+---
+/* ================================================================
+   Layout.astro — envelope HTML reutilizável de todas as páginas
+   ================================================================
+   Toda página em src/pages/ que importar este Layout vai receber:
+     - <html>, <head>, <body> já configurados
+     - Google Fonts pré-carregadas (Press Start 2P, Pixelify Sans, JetBrains Mono)
+     - global.css importado (Tailwind + tokens)
+     - <slot /> pra conteúdo específico da página
+
+   Uso típico em uma página:
+     ---
+     import Layout from '../layouts/Layout.astro';
+     ---
+     <Layout title="Boot · Idearium">
+       <h1>Conteúdo da página</h1>
+     </Layout>
+   ================================================================ */
+
+// Importa o CSS global UMA VEZ — Astro inlinea no HTML automaticamente
+import '../styles/global.css';
+
+// ClientRouter: habilita View Transitions API nativa do browser pra navegações
+// suaves entre páginas. Por default aplica cross-fade; elementos com
+// transition:name="X" igual em duas páginas FAZEM MORPH entre posições.
+import { ClientRouter } from 'astro:transitions';
+
+// Define props que páginas podem passar
+interface Props {
+  title?: string;       // <title> do browser tab
+  description?: string; // <meta name="description"> pro SEO
+  lang?: string;        // idioma do <html>, default pt-BR
+}
+
+const {
+  title = 'Idearium',
+  description = 'Periódico aberto de construção coletiva',
+  lang = 'pt-BR',
+} = Astro.props;
+---
+
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+
+    {/* === GOOGLE FONTS ===
+        preconnect avisa o browser pra abrir conexão TCP+TLS com fonts.googleapis.com
+        ANTES da request do CSS chegar. Economiza ~100ms na primeira carga.
+        crossorigin é obrigatório no segundo preconnect (gstatic) porque fontes
+        são servidas de domínio diferente do CSS. */}
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+    />
+
+    {/* View Transitions API — habilita morph entre páginas */}
+    <ClientRouter />
+  </head>
+  <body>
+    {/* slot é onde o conteúdo de cada página é injetado.
+        Astro substitui essa tag pelo HTML que vier dentro de <Layout>...</Layout> */}
+    <slot />
+  </body>
+</html>

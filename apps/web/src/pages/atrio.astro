@@ -1,0 +1,433 @@
+---
+/* ================================================================
+   atrio.astro — home pública editorial (asymmetric 2-col)
+   ================================================================
+   Layout: cobalto wallpaper full-viewport (única coisa que extende
+   além do conteúdo) + coluna 900px contendo header + main + footer.
+   Main: sidebar 220px (labs/builders/stats/sobre) + story flexível
+   (hero/feed RFCs/CTA banner/quote).
+
+   Inspirado em miserabledolly.net (editorial scrapbook). Aesthetic
+   Kare nas peças (NeueBit, paleta cobalto+cream+yellow+ink) mas
+   layout puro editorial — zero painéis, dividers via `* * *` e `✺`.
+
+   Conteúdo: vocabulário canônico backend (Comment, RfcStatus, sem
+   endossar/leitor). MVP com placeholder; wire to API depois.
+   ================================================================ */
+import Layout from '../layouts/Layout.astro';
+
+// Transição soft slide — duration 500ms (era 700, dentro da janela 200-500 Emil)
+const softSlide = {
+  forwards: {
+    old: { name: 'soft-slide-out-left',  duration: '700ms', easing: 'cubic-bezier(0.23, 1, 0.32, 1)' },
+    new: { name: 'soft-slide-in-right',  duration: '700ms', easing: 'cubic-bezier(0.23, 1, 0.32, 1)' },
+  },
+  backwards: {
+    old: { name: 'soft-slide-out-right', duration: '700ms', easing: 'cubic-bezier(0.23, 1, 0.32, 1)' },
+    new: { name: 'soft-slide-in-left',   duration: '700ms', easing: 'cubic-bezier(0.23, 1, 0.32, 1)' },
+  },
+};
+
+// === DADOS PLACEHOLDER (futuro: GET /labs, /rfcs/featured, /builders) ===
+const labs = [
+  { slug: 'educacao',       name: 'Educação',        icon: 'lab-educacao',       rfcs: 12, builders: 34 },
+  { slug: 'cidades',        name: 'Cidades',         icon: 'lab-cidades',        rfcs: 9,  builders: 22 },
+  { slug: 'saude',          name: 'Saúde',           icon: 'lab-saude',          rfcs: 7,  builders: 18 },
+  { slug: 'cultura',        name: 'Cultura',         icon: 'lab-cultura',        rfcs: 6,  builders: 14 },
+  { slug: 'tec-civica',     name: 'Tec. Cívica',     icon: 'lab-tec-civica',     rfcs: 8,  builders: 26 },
+  { slug: 'econ-solidaria', name: 'Econ. Solidária', icon: 'lab-econ-solidaria', rfcs: 5,  builders: 14 },
+];
+
+const featuredRfcs = [
+  {
+    code: 'RFC-0007',
+    title: 'Biblioteca Cooperativa de Bairro',
+    summary: 'Catálogo leve para vizinhos emprestarem livros entre si — registro simples de posse, devolução e reputação baseada em confiança.',
+    lab: 'Educação',
+    author: '@luisa',
+    enrollments: 8,
+    daysAgo: 2,
+    status: 'IN_BUILDING',
+  },
+  {
+    code: 'RFC-0011',
+    title: 'Rastreamento Anônimo de Enchentes Urbanas',
+    summary: 'Canal colaborativo de relatos geolocalizados sobre alagamentos, agregando ocorrências em tempo quase-real como dado público, preservando anonimato.',
+    lab: 'Cidades',
+    author: '@rafael',
+    enrollments: 5,
+    daysAgo: 4,
+    status: 'IN_DISCUSSION',
+  },
+  {
+    code: 'RFC-0014',
+    title: 'Farmácia Solidária por Geolocalização',
+    summary: 'Rede de pontos comunitários onde pessoas doam medicamentos fechados e dentro da validade, com busca por proximidade e moderação local.',
+    lab: 'Saúde',
+    author: '@marina',
+    enrollments: 11,
+    daysAgo: 0,
+    status: 'IN_BUILDING',
+  },
+];
+
+const builders = [
+  { handle: '@mari.fe',    bio: 'front + ilustração — procura projeto de cultura' },
+  { handle: '@jhonatan',   bio: 'data + infra — interesse em cidades e saúde' },
+  { handle: '@lu.design',  bio: 'produto + UX — disponível para MVP curto' },
+  { handle: '@dev.raposa', bio: 'backend + devops — gravita para tec. cívica' },
+];
+
+// Map status enum → label PT lowercase
+const statusLabel: Record<string, string> = {
+  DRAFT:         'rascunho',
+  IN_DISCUSSION: 'em discussão',
+  IN_BUILDING:   'em construção',
+  PUBLISHED:     'publicada',
+  ARCHIVED:      'arquivada',
+};
+
+const formatTime = (days: number) =>
+  days === 0 ? 'hoje' : days === 1 ? 'há 1 dia' : `há ${days} dias`;
+---
+
+<Layout title="Idearium · Átrio">
+
+  {/* ============== WALLPAPER cobalto + halftone (única coisa full-viewport) ============== */}
+  <div
+    class="min-h-screen"
+    style="
+      background-color: var(--color-cobalto);
+      background-image: radial-gradient(circle at 1.5px 1.5px, var(--color-cream-dot) 1.5px, transparent 0);
+      background-size: 8px 8px;
+    "
+  >
+    {/* Coluna única 900px — header + main + footer todos vivem aqui */}
+    <div class="max-w-[900px] mx-auto">
+
+      {/* ============== HEADER (transparente — wallpaper aparece) ============== */}
+      <header>
+        <div class="px-6 py-5 flex items-center gap-8">
+      <a href="/" class="flex items-center gap-3 nav-link">
+        <span class="logo-frame" transition:name="hero-logo">
+          <img src="/idearium-logo.svg" alt="" class="pixel" />
+        </span>
+        <span
+          class="font-display text-cream"
+          style="
+            font-size: 28px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            line-height: 1;
+            letter-spacing: 0.02em;
+            transform: translateY(1px);
+          "
+        >idearium</span>
+      </a>
+
+      <nav class="hidden md:flex items-center gap-7 ml-8 text-[15px] text-cream/85">
+        <a href="#labs"     class="nav-link">laboratórios</a>
+        <a href="#destaque" class="nav-link">ideias</a>
+        <a href="#builders" class="nav-link">builders</a>
+        <a href="#sobre"    class="nav-link">sobre</a>
+      </nav>
+
+      <div class="ml-auto flex items-center gap-4">
+        <button class="icon-btn" aria-label="Buscar">
+          <img src="/icons/search.svg" alt="" class="pixel icon-cream" style="height: 18px; width: 18px;" />
+        </button>
+        <a href="#" class="nav-link font-mono text-[11px] uppercase tracking-widest text-cream/70">pt · en</a>
+        <a href="/login" class="header-btn">entrar</a>
+      </div>
+    </div>
+  </header>
+
+      {/* ============== MAIN cream (dentro da coluna 900px) ============== */}
+      <main
+        transition:animate={softSlide}
+        class="border-x border-ink/15"
+        style="background: var(--color-cream); color: var(--color-ink);"
+      >
+        <div class="lg:grid lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-px lg:bg-ink/15">
+
+        {/* ============== SIDEBAR ESQUERDA — bg cream explicit pra trick gap-px ============== */}
+        <aside class="p-8 bg-cream">
+
+          {/* Bloco 1: laboratórios */}
+          <div>
+            <p class="font-mono text-[11px] uppercase tracking-widest text-ink/50 mb-4">// laboratórios</p>
+            <ul class="divide-y divide-ink/10">
+              {labs.map(lab => (
+                <li>
+                  <a href={`/labs/${lab.slug}`} class="lab-row flex items-center gap-3 py-2.5 transition-colors">
+                    <img src={`/icons/${lab.icon}.svg`} alt="" class="pixel" style="height: 18px; width: 18px;" />
+                    <div class="flex-1 min-w-0">
+                      <p data-name class="font-display text-[15px] text-ink leading-tight">{lab.name}</p>
+                    </div>
+                    <span class="font-mono text-[10px] text-ink/45">{lab.rfcs}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div class="divider" aria-hidden="true">* * *</div>
+
+          {/* Bloco 2: builders disponíveis */}
+          <div id="builders">
+            <p class="font-mono text-[11px] uppercase tracking-widest text-ink/50 mb-4">// builders abertos</p>
+            <ul class="divide-y divide-ink/10">
+              {builders.map(b => (
+                <li>
+                  <a href={`/builders/${b.handle.replace('@', '')}`} class="builder-row flex items-start gap-2 py-2.5 transition-colors">
+                    <div class="flex-1 min-w-0">
+                      <p class="font-mono text-[12px] text-ink leading-tight">{b.handle}</p>
+                      <p class="font-serif text-[12px] text-ink/60 mt-0.5 leading-snug">{b.bio}</p>
+                    </div>
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <a href="/builders" class="font-mono text-[10px] text-ink/55 hover:text-cobalto transition-colors mt-2 inline-block">
+              ver todos os 128 →
+            </a>
+          </div>
+
+          <div class="divider" aria-hidden="true">* * *</div>
+
+          {/* Bloco 3: panorama */}
+          <div>
+            <p class="font-mono text-[11px] uppercase tracking-widest text-ink/50 mb-3">// panorama</p>
+            <div class="font-mono text-[12px] text-ink/75 leading-relaxed">
+              <p><span class="text-ink font-semibold">47</span> ideias ativas</p>
+              <p><span class="text-ink font-semibold">128</span> builders</p>
+              <p><span class="text-ink font-semibold">6</span> laboratórios</p>
+              <p><span class="text-ink font-semibold">3</span> publicadas / mês</p>
+            </div>
+          </div>
+
+          <div class="divider" aria-hidden="true">* * *</div>
+
+          {/* Bloco 4: sobre / institucional */}
+          <div>
+            <p class="font-mono text-[11px] uppercase tracking-widest text-ink/50 mb-3">// sobre</p>
+            <ul class="space-y-1.5 font-serif text-[13px] text-ink/75">
+              <li><a href="/sobre" class="nav-link">o que é idearium</a></li>
+              <li><a href="/governanca" class="nav-link">governança</a></li>
+              <li><a href="/codigo-de-conduta" class="nav-link">código de conduta</a></li>
+              <li><a href="/transparencia" class="nav-link">transparência</a></li>
+            </ul>
+          </div>
+
+        </aside>
+
+        {/* ============== MAIN STORY (central) — bg cream explicit pra trick gap-px ============== */}
+        <section class="p-8 bg-cream">
+
+          {/* === HERO === */}
+          <div>
+            <p class="font-mono text-[11px] uppercase tracking-widest text-ink/50 mb-4">// átrio · primavera 2026</p>
+            <h1 class="font-display text-[34px] lg:text-[42px] text-ink leading-[1.05] max-w-[16ch]" style="letter-spacing: 0.005em; font-weight: 700;">
+              comunidade de construção coletiva.
+            </h1>
+            <p class="font-serif text-[17px] text-ink/80 mt-5 max-w-[50ch] leading-relaxed">
+              Idearium reúne ideias abertas e builders voluntários em laboratórios
+              temáticos — ciclo de proposta, discussão, construção e publicação.
+            </p>
+          </div>
+
+          <div class="divider divider-large" aria-hidden="true">✺ ✺ ✺</div>
+
+          {/* === EM DESTAQUE === */}
+          <div id="destaque">
+            <div class="flex items-baseline justify-between mb-2">
+              <p class="font-mono text-[11px] uppercase tracking-widest text-ink/50">// em destaque</p>
+              <a href="/rfcs" class="font-mono text-[10px] text-ink/55 hover:text-cobalto transition-colors">ver todas as 47 →</a>
+            </div>
+            <h2 class="font-display text-[28px] text-ink leading-tight mt-1 mb-8" style="letter-spacing: 0.005em;">
+              três propostas abertas à colaboração
+            </h2>
+
+            <ul class="border-t border-ink/15">
+              {featuredRfcs.map(rfc => (
+                <li class="rfc-row border-b border-ink/15 transition-colors">
+                  <a
+                    href={`/rfcs/${rfc.code.toLowerCase()}`}
+                    class="block py-7"
+                    aria-label={`${rfc.code}: ${rfc.title} (Lab. ${rfc.lab}, ${statusLabel[rfc.status]})`}
+                  >
+                    <div class="flex items-start justify-between gap-4 mb-2">
+                      <p class="font-mono text-[11px] tracking-wider">
+                        <span class="text-yellow font-semibold">{rfc.code}</span>
+                        <span class="text-ink/40 mx-2">·</span>
+                        <span class="text-ink/60">Lab. {rfc.lab}</span>
+                      </p>
+                      <span class:list={['status-tag', `status-${rfc.status}`]}>
+                        {statusLabel[rfc.status]}
+                      </span>
+                    </div>
+                    <h3 class="font-display text-[26px] text-ink leading-tight mt-2 transition-colors" style="letter-spacing: 0.005em;">
+                      {rfc.title}
+                    </h3>
+                    <p class="font-serif text-[16.5px] text-ink/75 mt-3 leading-relaxed max-w-[60ch]">
+                      {rfc.summary}
+                    </p>
+                    <p class="font-mono text-[11px] text-ink/55 mt-4">
+                      <span class="text-ink">{rfc.author}</span>
+                      <span class="mx-2">·</span>
+                      {rfc.enrollments} builders inscritos
+                      <span class="mx-2">·</span>
+                      {formatTime(rfc.daysAgo)}
+                    </p>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div class="divider divider-large" aria-hidden="true">✺ ✺ ✺</div>
+
+          {/* === CTA banner — única loud da página, peso suavizado vs original === */}
+          <div class="cta-banner p-7 relative" style="background: var(--color-cream); border: 1.5px solid var(--color-ink); box-shadow: 3px 3px 0 var(--color-yellow);">
+            <div class="flex items-center gap-4">
+              <img src="/icons/quill.svg" alt="" class="pixel" style="height: 28px; width: 28px;" />
+              <div class="flex-1">
+                <p class="font-display text-[24px] text-ink leading-tight" style="letter-spacing: 0.005em;">
+                  escreva uma ideia.
+                </p>
+                <p class="font-serif italic text-[16px] text-ink/75 mt-2 leading-relaxed">
+                  não precisa saber fazer. precisa só querer que aconteça.
+                </p>
+              </div>
+              <a href="/rfcs/new" class="boot-cta" style="font-size: 16px; padding: 10px 18px;">
+                começar →
+              </a>
+            </div>
+          </div>
+
+          <div class="divider" aria-hidden="true">* * *</div>
+
+          {/* === Quote / closing === */}
+          <p class="font-serif italic text-[18px] text-ink/65 text-center leading-relaxed max-w-[44ch] mx-auto py-6">
+            "ideias que ninguém viu não existem. ideias que viram código existem duas vezes."
+          </p>
+
+        </section>
+
+        </div>
+      </main>
+
+      {/* ============== FOOTER (transparente — wallpaper aparece) ============== */}
+      <footer>
+        <div class="px-6 py-10 grid sm:grid-cols-3 gap-8">
+      <div>
+        <p class="font-display text-[20px] text-cream">idearium</p>
+        <p class="font-serif italic text-[14px] text-cream/75 mt-2 max-w-xs leading-relaxed">
+          Comunidade de construção coletiva, mantida por voluntários e apoiadores.
+        </p>
+        <p class="font-mono text-[10px] text-cream/55 mt-4">cc by-sa 4.0 · v0.1</p>
+      </div>
+
+      <nav>
+        <p class="font-mono text-[11px] uppercase tracking-widest text-cream/60 mb-3">comunidade</p>
+        <ul class="space-y-2 text-[14px] font-serif text-cream/85">
+          <li><a href="/codigo-de-conduta" class="nav-link">código de conduta</a></li>
+          <li><a href="/governanca" class="nav-link">governança</a></li>
+          <li><a href="/transparencia" class="nav-link">transparência</a></li>
+        </ul>
+      </nav>
+
+      <nav>
+        <p class="font-mono text-[11px] uppercase tracking-widest text-cream/60 mb-3">acompanhe</p>
+        <ul class="space-y-2 text-[14px] font-serif text-cream/85">
+          <li class="flex items-center gap-2">
+            <img src="/icons/rss.svg" alt="" class="pixel icon-cream" style="height: 14px; width: 14px;" />
+            <a href="/rss.xml" class="nav-link">rss feed</a>
+          </li>
+          <li class="flex items-center gap-2">
+            <img src="/icons/info.svg" alt="" class="pixel icon-cream" style="height: 14px; width: 14px;" />
+            <a href="/sobre" class="nav-link">sobre o idearium</a>
+          </li>
+        </ul>
+      </nav>
+        </div>
+      </footer>
+
+    </div>{/* fecha coluna 900px */}
+  </div>{/* fecha wallpaper */}
+
+</Layout>
+
+<style>
+  /* === NAV LINK — underline animated em todos hovers de link de texto === */
+  .nav-link {
+    position: relative;
+    transition: color 160ms ease-out;
+  }
+  /* Underline cresce de baixo, esquerda pra direita */
+  .nav-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -3px;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 200ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  /* Color transitions em todos elementos que mudam cor on hover.
+     Padroniza com .nav-link::after (200ms ease-out) — tudo mesma curva. */
+  .lab-row [data-name],
+  .rfc-row h3,
+  .builder-row .font-mono {
+    transition: color 200ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  /* Hover gates — touch devices não disparam */
+  @media (hover: hover) and (pointer: fine) {
+    .nav-link:hover::after { transform: scaleX(1); }
+
+    .lab-row:hover [data-name] { color: var(--color-cobalto); }
+    .rfc-row:hover h3 { color: var(--color-cobalto); }
+    .builder-row:hover .font-mono { color: var(--color-cobalto); }
+  }
+
+  /* Divider editorial — em vez de border-2 + shadow, asterisks centrados.
+     Vibe miserabledolly / scrapbook. Suaviza pra ficar discreto. */
+  .divider {
+    text-align: center;
+    color: rgba(10, 10, 10, 0.25);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    letter-spacing: 0.5em;
+    margin: 36px 0;
+    user-select: none;
+  }
+  .divider-large {
+    margin: 60px 0;
+    color: var(--color-yellow);
+    font-size: 18px;
+  }
+
+  /* === STATUS TAG monochrome — paleta interna (cobalto / yellow / ink) ===
+     Removido amber+green hardcoded. Tudo dentro do vocabulário Kare. */
+  .status-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 4px 8px;
+    border: 1.5px solid currentColor;
+    color: rgba(10, 10, 10, 0.55);  /* ink/55 default */
+    background: var(--color-cream-soft);
+    white-space: nowrap;
+  }
+  .status-tag.status-IN_BUILDING   { color: var(--color-cobalto); border-color: var(--color-cobalto); }
+  .status-tag.status-IN_DISCUSSION { color: var(--color-ink); border-color: var(--color-ink); background: var(--color-yellow); }
+  .status-tag.status-PUBLISHED     { color: var(--color-ink); border-color: var(--color-ink); }
+  .status-tag.status-DRAFT         { color: rgba(10, 10, 10, 0.45); border-color: rgba(10, 10, 10, 0.25); }
+  .status-tag.status-ARCHIVED      { color: rgba(10, 10, 10, 0.45); border-color: rgba(10, 10, 10, 0.25); }
+</style>
