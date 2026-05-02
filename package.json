@@ -16,6 +16,9 @@
     "build:api": "npm run build -w apps/api",
     "lint:api": "npm run lint -w apps/api",
     "test:api": "npm run test -w apps/api",
+    "dev:web": "npm run dev -w apps/web",
+    "build:web": "npm run build -w apps/web",
+    "preview:web": "npm run preview -w apps/web",
     "db:up": "docker compose up -d postgres",
     "db:down": "docker compose down",
     "db:logs": "docker compose logs -f postgres"
